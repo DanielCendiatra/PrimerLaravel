@@ -7,6 +7,7 @@ use Illuminate\Console\View\Components\Task as ComponentsTask;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Stmt\Return_;
 
@@ -17,8 +18,13 @@ class TaskController extends Controller
      */
     public function index(): View
     {
-        $tasks = Task::latest()->paginate(10);
-        return view('index', ['tasks'=> $tasks]);
+        $tasks = Task::oldest()->paginate(10);
+        if(Auth::user()->rol == 'Docente'){
+            return view('index', ['tasks'=> $tasks]);
+        }else{
+            return view('entrega', ['tasks'=> $tasks]);
+        }
+        
     }
 
     /**
@@ -39,7 +45,7 @@ class TaskController extends Controller
             'descripción' => 'required'
         ]);
         Task::create($request->all());
-        return redirect()->route("tasks.index")->with('succeess', 'La tarea fue creada exitosamente.');
+        return redirect()->route("tasks.index")->with('success', 'La tarea fue creada exitosamente.');
     }
 
     /**
@@ -68,7 +74,7 @@ class TaskController extends Controller
             'descripción' => 'required'
         ]);
         $task->update($request->all());
-        return redirect()->route("tasks.index")->with('succeess', 'La tarea fue actualizada exitosamente.');
+        return redirect()->route("tasks.index")->with('success', 'La tarea fue actualizada exitosamente.');
     }
 
     /**
@@ -77,6 +83,12 @@ class TaskController extends Controller
     public function destroy(task $task)
     {
         $task->delete();
-        return redirect()->route("tasks.index")->with('succeess', 'La tarea fue Eliminada exitosamente.');
+        return redirect()->route("tasks.index")->with('success', 'La tarea fue Eliminada exitosamente.');
+    }
+
+    public function entregar(Task $task): RedirectResponse
+    {
+        $task->update(['estado' => 'Completada']);
+        return redirect()->route('tasks.index')->with('success', 'La tarea ha sido entregada.');
     }
 }

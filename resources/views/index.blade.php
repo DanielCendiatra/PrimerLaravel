@@ -24,7 +24,7 @@
     </div><br><br><br><br><br><br>
     <div class="col-12">
         <div>
-            <h2 class="text-white">CRUD de Tareas</h2>
+            <h2 class="text-white">Tareas Creadas</h2>
         </div>
     </div>
 
@@ -37,11 +37,11 @@
     <div class="col-12 mt-4">
         <table class="table table-bordered text-white">
             <tr class="text-secondary">
-                <th>Tarea</th>
-                <th>Descripción</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Acción</th>
+                <th style="color: #fff">Tarea</th>
+                <th style="color: #fff">Descripción</th>
+                <th style="color: #fff">Fecha</th>
+                <th style="color: #fff">Estado</th>
+                <th style="color: #fff">Acción</th>
             </tr>
             @foreach ($tasks as $task)
                 <tr>

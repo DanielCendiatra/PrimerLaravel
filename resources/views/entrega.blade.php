@@ -7,12 +7,12 @@
             <div class="iden_per">
                 <div>
                     <div class="item">
-                        <p style="color: black;  font-size: 25px; margin-top: 2%"><strong>{{Auth::user()->name}}</strong></p>
+                        <p style="color: black; font-size: 25px; margin-top: 2%"><strong>{{ Auth::user()->name }}</strong></p>
                     </div>
                 </div>
             </div>
             <ul style="display: flex; align-items: center; margin-top: 1%">
-                <form action="{{route("logout")}}" method="POST" class="d-inline" style="margin-left: 20px">
+                <form action="{{ route("logout") }}" method="POST" class="d-inline" style="margin-left: 20px">
                     @csrf
                     <button type="submit" class="btn btn-danger">Cerrar Sesion</button>
                 </form>
@@ -27,51 +27,53 @@
 
     @if (Session::get('success'))
         <div class="alert alert-success mt-2">
-            <strong>{{Session::get('success')}}</strong><br>
+            <strong>{{ Session::get('success') }}</strong><br>
         </div>
     @endif
 
     <div class="col-12 mt-4">
         <table class="table table-bordered text-white">
             <tr class="text-secondary">
-                <th>Tarea</th>
-                <th>Descripción</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Acción</th>
+                <th style="color: #fff">Tarea</th>
+                <th style="color: #fff">Descripción</th>
+                <th style="color: #fff">Fecha</th>
+                <th style="color: #fff">Estado</th>
+                <th style="color: #fff">Acción</th>
             </tr>
             @foreach ($tasks as $task)
                 <tr>
-                    <td class="fw-bold">{{$task->Titulo}}</td>
-                    <td>{{$task->descripción}}</td>
-                    <td>
-                        {{$task->tarea_date}}
-                    </td>
+                    <td class="fw-bold">{{ $task->Titulo }}</td>
+                    <td>{{ $task->descripción }}</td>
+                    <td>{{ $task->tarea_date }}</td>
 
                     @if ($task->estado == 'Pendiente')
                         <td>
-                            <span class="badge fs-6" style="background-color: #E67E22">{{$task->estado}}</span>
+                            <span class="badge fs-6" style="background-color: #E67E22">{{ $task->estado }}</span>
                         </td>
                     @endif
                     @if ($task->estado == 'Completada')
                         <td>
-                            <span class="badge fs-6" style="background-color: #2ECC71">{{$task->estado}}</span>
+                            <span class="badge fs-6" style="background-color: #2ECC71">{{ $task->estado }}</span>
                         </td>
                     @endif
                     @if ($task->estado == 'En progreso')
                         <td>
-                            <span class="badge fs-6" style="background-color: #F1C40F">{{$task->estado}}</span>
+                            <span class="badge fs-6" style="background-color: #F1C40F">{{ $task->estado }}</span>
                         </td>
                     @endif
 
                     <td>
-                        <a href="" class="btn btn-warning"  style="background-color: #1414b8; border-color:#1414b8; color: #fff">Entregar</a>
+                        <form action="{{ route('tasks.entregar', $task->id) }}" method="POST">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="btn btn-warning" style="background-color: #1414b8; border-color: #1414b8; color: #fff">Entregar</button>
+                        </form>
                     </td>
                 </tr>
             @endforeach
             
         </table>
-        {{$tasks->links()}}
+        {{ $tasks->links() }}
     </div>
 </div>
 @endsection

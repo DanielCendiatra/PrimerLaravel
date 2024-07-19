@@ -29,6 +29,14 @@
                 <label for="password" style="color: black">Contraseña</label>
                 <input type="password" id="password" name="password" class="form-control mt-3" required>
             </div>
+            <div style="margin-left: 40px; margin-rigth: 40px" class="col-md-10 mt-4">
+                <label for="rol" style="color: black">Rol</label>
+                <select name="rol" class="form-select mt-2" id="">
+                    <option value="">-- Elige un rol--</option>
+                    <option value="Docente">Docente</option>
+                    <option value="Alumno">Alumno</option>
+                </select>
+            </div>
             <div class="col-xs-12 col-sm-12 col-md-12 text-center mt-4">
                 <button type="submit" class="btn btn-primary" style="background-color: #1414b8; border-color:#1414b8">Registrar</button>
             </div>

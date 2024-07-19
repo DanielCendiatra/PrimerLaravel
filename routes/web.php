@@ -22,6 +22,8 @@ Route::get('/', function () {
 Route::view('/login', "login")->name('login');
 Route::view('/registro', "registro")->name('registro');
 Route::resource('/tasks', TaskController::class)->middleware('auth');
+Route::resource('/entrega', TaskController::class)->middleware('auth');
+Route::patch('/tasks/{task}/entregar', [TaskController::class, 'entregar'])->name('tasks.entregar');
 
 Route::post('/validar-registro', [LoginController::class, 'register'])->name('validar-registro');
 Route::post('/iniciar-sesion', [LoginController::class, 'login'])->name('iniciar-sesion');
