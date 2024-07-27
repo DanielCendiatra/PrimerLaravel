@@ -4,13 +4,34 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
+
 use App\Models\User;
+use App\Models\Course;
+use App\Models\Classe;
+use App\Models\Student;
+use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
 {
+    public function showRegisterForm(): View 
+    {
+        $classes = Classe::whereNull('teacher_id')->get();
+        $courses = Course::all();
+        return view('registro', ['classes'=> $classes , 'courses'=> $courses]);
+    }
+     
+
     public function register(Request $request){
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'rol' => 'required|string|in:Docente,Alumno',
+            'extra_field' => 'required_if:rol,Docente,Alumno',
+        ]);
+
         $user = new User();
 
         $user->name = $request->name;
@@ -19,6 +40,22 @@ class LoginController extends Controller
         $user->rol = $request->rol;
 
         $user->save();
+
+        if ($request->rol === 'Docente') 
+        { 
+            $classe = Classe::find($request->extra_field); 
+            if ($classe) { 
+                $classe->teacher_id = $user->id; 
+                $classe->save(); 
+            } 
+        } 
+        else if ($request->rol === 'Alumno') 
+        { 
+            $student = new Student(); 
+            $student->user_id = $user->id; 
+            $student->course = $request->extra_field; 
+            $student->save(); 
+        }
 
         Auth::login($user);
 

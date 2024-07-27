@@ -39,7 +39,7 @@
             <div class="col-xs-12 col-sm-12 col-md-12 mt-2">
                 <div class="form-group">
                     <strong>Tarea:</strong>
-                    <input type="text" name="Titulo" class="form-control mt-2" placeholder="Tarea" >
+                    <input type="text" name="Titulo" class="form-control mt-2" placeholder="Tarea">
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 mt-2">
@@ -56,12 +56,12 @@
             </div>
             <div class="col-xs-12 col-sm-12 col-md-6 mt-2">
                 <div class="form-group">
-                    <strong>Estado (inicial):</strong>
-                    <select name="estado" class="form-select mt-2" id="">
-                        <option value="">-- Elige el status --</option>
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="En progreso">En progreso</option>
-                        <option value="Completada">Completada</option>
+                    <strong>Curso:</strong>
+                    <select name="course" class="form-select mt-2" id="">
+                        <option value="">-- Elige el curso --</option>
+                        @foreach ($courses as $course)
+                            <option value="{{$course->id_course}}">{{$course->name_course}}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>

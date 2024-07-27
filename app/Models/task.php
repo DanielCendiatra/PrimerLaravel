@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class task extends Model
+class Task extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    protected $fillable = ['Titulo', 'descripción', 'tarea_date', 'estado'];
+    protected $fillable = ['Titulo', 'descripción', 'tarea_date', 'estado', 'course', 'class'];
+
+    public function classe()
+    {
+        return $this->belongsTo(Classe::class, 'class', 'id_class');
+    }
 }

@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->enum('rol', ['Docente', 'Alumno'])->after('name');;
+        Schema::create('courses', function (Blueprint $table) {
+            $table->id('id_course');
+            $table->string('name_course');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('rol');
-        });
+        Schema::dropIfExists('courses');
     }
 };

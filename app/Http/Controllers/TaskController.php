@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\task;
+use App\Models\Course;
+use App\Models\Classe;
+use App\Models\Student;
+use App\Models\student_task;
 use Illuminate\Console\View\Components\Task as ComponentsTask;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -10,6 +14,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use PhpParser\Node\Stmt\Return_;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
@@ -18,21 +23,32 @@ class TaskController extends Controller
      */
     public function index(): View
     {
-        $tasks = Task::oldest()->paginate(10);
-        if(Auth::user()->rol == 'Docente'){
-            return view('index', ['tasks'=> $tasks]);
-        }else{
-            return view('entrega', ['tasks'=> $tasks]);
+        $user = Auth::user();
+
+        if ($user->rol == 'Docente') {
+            $classe = Classe::where('teacher_id', $user->id)->first();
+            if ($classe) {
+                $tasks = Task::where('class', $classe->id_class)->oldest()->paginate(10);
+            } else {
+                $tasks = collect(); 
+            }
+
+            return view('index', ['tasks' => $tasks]);
+        } else {
+            $tasks = Task::oldest()->paginate(10);
+
+            return view('entrega', ['tasks' => $tasks]);
         }
-        
     }
+
 
     /**
      * Show the form for creating a new resource.
      */
     public function create(): View
     {
-        return view('crear');
+        $courses = Course::all();  
+        return view('crear', ['courses'=> $courses]);
     }
 
     /**
@@ -42,10 +58,43 @@ class TaskController extends Controller
     {
         $request->validate([
             'Titulo' => 'required', 
-            'descripción' => 'required'
+            'descripción' => 'required',
+            'tarea_date' => 'required|date',
+            'course' => 'required|exists:courses,id_course',
         ]);
-        Task::create($request->all());
-        return redirect()->route("tasks.index")->with('success', 'La tarea fue creada exitosamente.');
+
+        $user = Auth::user();
+
+        if($user->rol == 'Docente') {
+            $classe = Classe::where('teacher_id', $user->id)->first();
+            if ($classe) {
+                $task = Task::create([
+                    'Titulo' => $request->Titulo,
+                    'descripción' => $request->descripción,
+                    'tarea_date' => $request->tarea_date,
+                    'course' => $request->course,
+                    'estado' => 'En progreso',
+                    'class' => $classe->id_class,
+                ]);
+
+                // Obtener todos los estudiantes del curso especificado
+                $students = Student::where('course', $request->course)->get();
+
+                // Crear una entrada en student_tasks para cada estudiante
+                foreach ($students as $student) {
+                    student_task::create([
+                        'task_id' => $task->id,
+                        'student_id' => $student->id_student,
+                    ]);
+                }
+
+                return redirect()->route("tasks.index")->with('success', 'La tarea fue creada exitosamente.');
+            } else {
+                return redirect()->route("tasks.create")->withErrors('El docente no tiene una clase asignada.');
+            }
+        } else {
+            return redirect()->route("tasks.index")->withErrors('Solo los docentes pueden crear tareas.');
+        }
     }
 
     /**
@@ -80,10 +129,11 @@ class TaskController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(task $task)
-    {
+    public function destroy(Task $task): RedirectResponse
+    {   
+        student_task::where('task_id', $task->id)->delete();
         $task->delete();
-        return redirect()->route("tasks.index")->with('success', 'La tarea fue Eliminada exitosamente.');
+        return redirect()->route("tasks.index")->with('success', 'La tarea fue eliminada exitosamente.');
     }
 
     public function entregar(Task $task): RedirectResponse
