@@ -21,7 +21,7 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(Request $request): View
     {
         $user = Auth::user();
 
@@ -35,7 +35,38 @@ class TaskController extends Controller
 
             return view('index', ['tasks' => $tasks]);
         } else {
-            $tasks = Task::oldest()->paginate(10);
+            $student = Student::where('user_id', $user->id)->first();
+            if ($student) {
+                $query = DB::table('tasks')
+                    ->join('student_tasks', 'tasks.id', '=', 'student_tasks.task_id')
+                    ->join('classes', 'tasks.class', '=', 'classes.id_class')
+                    ->where('student_tasks.student_id', $student->id_student)
+                    ->where('student_tasks.deleted_at', Null)
+                    ->select('tasks.*', 'student_tasks.estado as student_task_estado' , 'student_tasks.note as student_task_nota');
+
+                    switch ($request->filter) {
+                        case 'name':
+                            $query->where('tasks.Titulo', 'like', '%' . $request->search . '%');
+                            break;
+                        case 'date':
+                            $query->whereDate('tasks.tarea_date', $request->search);
+                            break;
+                        case 'estado':
+                            $query->where('student_tasks.estado', $request->search);
+                            break;
+                        case 'note':
+                            $query->where(DB::raw('LEFT(student_tasks.note, 1)'), $request->search);
+                            break;
+                        case 'class':
+                            $query->where('classes.name_class', 'like', '%' . $request->search . '%');
+                            break;
+                    }
+
+                    $tasks = $query->oldest()->paginate(10);
+            
+            } else {
+                $tasks = collect(); 
+            }
 
             return view('entrega', ['tasks' => $tasks]);
         }
@@ -85,6 +116,7 @@ class TaskController extends Controller
                     student_task::create([
                         'task_id' => $task->id,
                         'student_id' => $student->id_student,
+                        'estado' => 'Vacia',
                     ]);
                 }
 
@@ -138,7 +170,10 @@ class TaskController extends Controller
 
     public function entregar(Task $task): RedirectResponse
     {
-        $task->update(['estado' => 'Completada']);
+        $user = Auth::user();
+        $task->update(['estado' => 'Finalizada']);
+        $students = Student::where('user_id', $user->id)->first();
+        student_task::where('student_id', $students->id_student )->where('task_id', $task->id)->update(['estado' => 'Entregada']);
         return redirect()->route('tasks.index')->with('success', 'La tarea ha sido entregada.');
     }
 }

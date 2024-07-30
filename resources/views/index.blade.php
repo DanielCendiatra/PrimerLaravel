@@ -56,7 +56,7 @@
                             <span class="badge fs-6" style="background-color: #E67E22">{{$task->estado}}</span>
                         </td>
                     @endif
-                    @if ($task->estado == 'Completada')
+                    @if ($task->estado == 'Finalizada')
                         <td>
                             <span class="badge fs-6" style="background-color: #2ECC71">{{$task->estado}}</span>
                         </td>

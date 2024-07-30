@@ -10,7 +10,7 @@ class student_task extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['task_id', 'student_id', 'archivo', 'note'];
+    protected $fillable = ['task_id', 'student_id', 'estado', 'archivo', 'note'];
 }
 
 
