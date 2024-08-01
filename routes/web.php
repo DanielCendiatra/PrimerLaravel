@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Student_taskController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
 
@@ -25,7 +26,7 @@ Route::post('/validar-registro', [LoginController::class, 'register'])->name('va
 Route::post('/iniciar-sesion', [LoginController::class, 'login'])->name('iniciar-sesion');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-
+Route::resource('/Calificar', Student_taskController::class)->middleware('auth');
 Route::resource('/tasks', TaskController::class)->middleware('auth');
 Route::resource('/entrega', TaskController::class)->middleware('auth');
 Route::patch('/tasks/{task}/entregar', [TaskController::class, 'entregar'])->name('tasks.entregar');

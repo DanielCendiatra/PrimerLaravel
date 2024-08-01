@@ -9,4 +9,8 @@ class student extends Model
 {
     use HasFactory;
     protected $fillable = ['user_id', 'course'];
+
+    public function student_tasks() { 
+        return $this->hasMany(Student_task::class); 
+    }
 }

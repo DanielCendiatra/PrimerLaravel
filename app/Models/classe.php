@@ -16,5 +16,9 @@ class classe extends Model
         return $this->belongsToMany(User::class , 'teacher_id');
     }
 
+    public function tasks(){
+        return $this->hasMany(Task::class);
+    }
+
     protected $table = 'classes';
 }

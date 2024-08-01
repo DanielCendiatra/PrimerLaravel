@@ -116,8 +116,9 @@ class TaskController extends Controller
                     student_task::create([
                         'task_id' => $task->id,
                         'student_id' => $student->id_student,
-                        'estado' => 'Vacia',
+                        'estado' => 'Vacia'
                     ]);
+                    student_task::updated(['updated_at' => Null]);
                 }
 
                 return redirect()->route("tasks.index")->with('success', 'La tarea fue creada exitosamente.');
@@ -171,7 +172,7 @@ class TaskController extends Controller
     public function entregar(Task $task): RedirectResponse
     {
         $user = Auth::user();
-        $task->update(['estado' => 'Finalizada']);
+        $task->update(['estado' => 'Finalizada', 'updated_at' => now()]);
         $students = Student::where('user_id', $user->id)->first();
         student_task::where('student_id', $students->id_student )->where('task_id', $task->id)->update(['estado' => 'Entregada']);
         return redirect()->route('tasks.index')->with('success', 'La tarea ha sido entregada.');
