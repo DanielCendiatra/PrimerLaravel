@@ -72,7 +72,7 @@
 
                     @if ($task->student_task_estado == 'Vacia')
                         <td>
-                            <span class="badge fs-6" style="background-color: #E67E22">{{ $task->student_task_estado }}</span>
+                            <span class="badge fs-6" style="background-color:darkgray">{{ $task->student_task_estado }}</span>
                         </td>
                     @endif
                     @if ($task->student_task_estado == 'Entregada')
@@ -83,6 +83,11 @@
                     @if ($task->student_task_estado == 'Calificada')
                         <td>
                             <span class="badge fs-6" style="background-color: #F1C40F">{{ $task->student_task_estado }}</span>
+                        </td>
+                    @endif
+                    @if ($task->student_task_estado == 'Entrega Tardia')
+                        <td>
+                            <span class="badge fs-6" style="background-color: #E67E22">{{ $task->student_task_estado }}</span>
                         </td>
                     @endif
 

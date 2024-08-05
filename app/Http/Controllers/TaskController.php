@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Classe;
 use App\Models\Student;
 use App\Models\student_task;
+use Carbon\Carbon;
 use Illuminate\Console\View\Components\Task as ComponentsTask;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -143,19 +144,51 @@ class TaskController extends Controller
      */
     public function edit(task $task): View
     {
-        return view('Actualizar', ['task' => $task]);
+        $courses = Course::all(); 
+        return view('Actualizar', ['task' => $task, 'courses'=> $courses]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, task $task): RedirectResponse
+    public function update(Request $request, Task $task): RedirectResponse
     {
         $request->validate([
             'Titulo' => 'required', 
-            'descripción' => 'required'
+            'descripción' => 'required',
+            'tarea_date' => 'required|date',
+            'course' => 'required|exists:courses,id_course'
         ]);
+
         $task->update($request->all());
+
+        if ($request->tarea_date < Carbon::now()) {
+            $task->update(['estado' => 'Finalizada']);
+        } else if ($request->tarea_date > Carbon::now()) {
+            $task->update(['estado' => 'En progreso']);
+
+            // Crear student_tasks para los estudiantes del curso que no tengan esta tarea
+            $students = Student::where('course', $request->course)->get();
+
+            foreach ($students as $student) {
+                // Verificar si el student ya tiene esta tarea
+                $existingStudentTask = student_task::where('task_id', $task->id)
+                    ->where('student_id', $student->id_student)
+                    ->first();
+
+                if (!$existingStudentTask) {
+                    // Crear una nueva tarea para el student
+                    student_task::create([
+                        'task_id' => $task->id,
+                        'student_id' => $student->id_student,
+                        'estado' => 'Vacia'
+                    ]);
+                }
+            }
+
+            student_task::where('estado', 'Entrega Tardia')->where('task_id', $task->id)->update(['estado' => 'Entregada']);
+        }
+
         return redirect()->route("tasks.index")->with('success', 'La tarea fue actualizada exitosamente.');
     }
 
@@ -172,9 +205,16 @@ class TaskController extends Controller
     public function entregar(Task $task): RedirectResponse
     {
         $user = Auth::user();
-        $task->update(['estado' => 'Finalizada', 'updated_at' => now()]);
         $students = Student::where('user_id', $user->id)->first();
-        student_task::where('student_id', $students->id_student )->where('task_id', $task->id)->update(['estado' => 'Entregada']);
+        if ($task->estado == 'En progreso'){
+            student_task::where('student_id', $students->id_student )->where('task_id', $task->id)->update(['estado' => 'Entregada', 'updated_at' => now()]);
+        }
+        else if($task->estado == 'Finalizada'){
+            student_task::where('student_id', $students->id_student )->where('task_id', $task->id)->update(['estado' => 'Entrega Tardia', 'updated_at' => now()]);
+        }
+        else{
+            return redirect()->route('tasks.index')->with('error', 'Esta tarea no es valida.');
+        };
         return redirect()->route('tasks.index')->with('success', 'La tarea ha sido entregada.');
     }
 }

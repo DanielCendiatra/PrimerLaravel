@@ -9,6 +9,9 @@ use App\Models\User;
 use App\Models\Course;
 use App\Models\Classe;
 use App\Models\Student;
+use App\Models\task;
+use App\Models\student_task;
+use Illuminate\Console\View\Components\Task as ComponentsTask;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -54,7 +57,16 @@ class LoginController extends Controller
             $student = new Student(); 
             $student->user_id = $user->id; 
             $student->course = $request->extra_field; 
-            $student->save(); 
+            $student->save();
+            $newstudent=Student::where('user_id', $user->id)->first();
+            $tasks=Task::where('course', $request->extra_field)->where('estado', 'En progreso')->get();
+            foreach ($tasks as $task) {
+                student_task::create([
+                    'task_id' => $task->id,
+                    'student_id' => $newstudent->id_student,
+                    'estado' => 'Vacia'
+                ]);
+            }
         }
 
         Auth::login($user);

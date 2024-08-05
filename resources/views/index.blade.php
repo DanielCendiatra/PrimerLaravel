@@ -51,12 +51,12 @@
                         {{$task->tarea_date}}
                     </td>
                     @if ($task->estado == 'Pendiente')
-                        <td style="text-align: center ; padding-top: 20px"">
+                        <td style="text-align: center ; padding-top: 20px">
                             <span class="badge fs-6" style="background-color: #E67E22">{{$task->estado}}</span>
                         </td>
                     @endif
                     @if ($task->estado == 'Finalizada')
-                        <td style="text-align: center ; padding-top: 20px"">
+                        <td style="text-align: center ; padding-top: 20px">
                             <span class="badge fs-6" style="background-color: #2ECC71">{{$task->estado}}</span>
                         </td>
                     @endif
@@ -72,7 +72,7 @@
                         <form action="{{route("tasks.destroy", $task)}}" method="POST" class="d-inline m-2">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                            <button type="submit" class="btn btn-danger delete-task-button">Eliminar</button>
                         </form>
                     </td>
                 </tr>
@@ -82,4 +82,14 @@
         {{$tasks->links()}}
     </div>
 </div>
+<script>
+    document.querySelectorAll('.delete-task-button').forEach(button => {
+        button.addEventListener('click', function(event){
+            event.preventDefault();
+            if(confirm('¿Estas seguro de Eliminar esta tarea?')){
+                this.closest('form').submit();
+            }
+        });
+    });
+</script>
 @endsection

@@ -41,29 +41,28 @@
             <div class="col-xs-12 col-sm-12 col-md-12 mt-2">
                 <div class="form-group">
                     <strong>Tarea:</strong>
-                    <input type="text" name="Titulo" class="form-control" placeholder="Tarea" value="{{$task->Titulo}}">
+                    <input type="text" name="Titulo" class="form-control mt-2" placeholder="Tarea" value="{{$task->Titulo}}">
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-12 mt-2">
                 <div class="form-group">
                     <strong>Descripción:</strong>
-                    <textarea class="form-control" style="height:150px" name="descripción" placeholder="Descripción..." >{{$task->descripción}}</textarea>
+                    <textarea class="form-control mt-2" style="height:150px" name="descripción" placeholder="Descripción..." >{{$task->descripción}}</textarea>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-6 mt-2">
                 <div class="form-group">
                     <strong>Fecha límite:</strong>
-                    <input type="date" name="tarea_date" class="form-control" id="" value={{$task->tarea_date}}>
+                    <input type="date" name="tarea_date" class="form-control mt-2" id="" value={{$task->tarea_date}}>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-12 col-md-6 mt-2">
                 <div class="form-group">
-                    <strong>Estado (inicial):</strong>
-                    <select name="estado" class="form-select" id="">
-                        <option value="">-- Elige el status --</option>
-                        <option value="Pendiente" @selected("Pendiente"==$task->estado)>Pendiente</option>
-                        <option value="En progreso" @selected("En progreso"==$task->estado)>En progreso</option>
-                        <option value="Completada" @selected("Completada"==$task->estado)>Completada</option>
+                    <strong>Curso:</strong>
+                    <select name="course" class="form-select mt-2" id="" value={{$task->course}}>
+                        @foreach ($courses as $course)
+                            <option value="{{ $course->id_course }}" {{ $course->id_course == $task->course ? 'selected' : '' }}>{{ $course->name_course }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
