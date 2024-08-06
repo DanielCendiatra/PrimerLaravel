@@ -26,6 +26,7 @@ Route::post('/validar-registro', [LoginController::class, 'register'])->name('va
 Route::post('/iniciar-sesion', [LoginController::class, 'login'])->name('iniciar-sesion');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::get('/tasks/chart-data', [TaskController::class, 'getTasksByClass']);
 Route::resource('/Calificar', Student_taskController::class)->middleware('auth');
 Route::resource('/tasks', TaskController::class)->middleware('auth');
 Route::resource('/entrega', TaskController::class)->middleware('auth');

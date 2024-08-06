@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('Titulo');
             $table->text('descripción');
             $table->dateTime('tarea_date')->nullable();
-            $table->enum('estado', ['Pendiente', 'En progreso', 'Completada'])->nullable();
+            $table->enum('estado', ['En progreso','Finalizada'])->nullable();
             $table->timestamps();
         });
     }

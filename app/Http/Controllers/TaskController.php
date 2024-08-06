@@ -35,7 +35,34 @@ class TaskController extends Controller
             }
 
             return view('index', ['tasks' => $tasks]);
-        } else {
+        } 
+        else if ($user->rol == 'Administrador'){
+            $query = Task::join('classes', 'tasks.class', '=', 'classes.id_class')
+            ->join('courses', 'tasks.course', '=', 'courses.id_course')
+            ->select('tasks.*', 'courses.name_course as course' , 'classes.name_class as class');
+            
+            switch ($request->filter) {
+                case 'name':
+                    $query->where('tasks.Titulo', 'like', '%' . $request->search . '%');
+                    break;
+                case 'date':
+                    $query->whereDate('tasks.tarea_date', $request->search);
+                    break;
+                case 'estado':
+                    $query->where('tasks.estado', $request->search);
+                    break;
+                case 'Curso':
+                    $query->where('courses.name_course',  $request->search );
+                    break;
+                case 'class':
+                    $query->where('classes.name_class', 'like', '%' . $request->search . '%');
+                    break;
+            }
+            
+            $tasks = $query->oldest()->paginate(10); 
+            return view('AdminDash', ['tasks' => $tasks]);
+        }
+        else {
             $student = Student::where('user_id', $user->id)->first();
             if ($student) {
                 $query = DB::table('tasks')
@@ -217,4 +244,18 @@ class TaskController extends Controller
         };
         return redirect()->route('tasks.index')->with('success', 'La tarea ha sido entregada.');
     }
+
+    public function getTasksByClass()
+    {
+        $tasksByClass = DB::table('tasks')
+            ->join('classes', 'tasks.class', '=', 'classes.id_class')
+            ->select('classes.name_class as class_name', DB::raw('count(tasks.id) as total'))
+            ->whereNull('tasks.deleted_at')
+            ->groupBy('classes.name_class')
+            ->orderBy('classes.name_class')
+            ->get();
+
+        return response()->json($tasksByClass);
+    }
+
 }
