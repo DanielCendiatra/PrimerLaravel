@@ -26,40 +26,32 @@ class LoginController extends Controller
     }
      
 
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'rol' => 'required|string|in:Docente,Alumno',
-            'extra_field' => 'required_if:rol,Docente,Alumno',
+            'extra_field' => 'required_if:rol,Alumno',
         ]);
-
+    
         $user = new User();
-
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->rol = $request->rol;
-
+    
         $user->save();
-
-        if ($request->rol === 'Docente') 
-        { 
-            $classe = Classe::find($request->extra_field); 
-            if ($classe) { 
-                $classe->teacher_id = $user->id; 
-                $classe->save(); 
-            } 
-        } 
-        else if ($request->rol === 'Alumno') 
+    
+        if ($request->rol === 'Alumno') 
         { 
             $student = new Student(); 
             $student->user_id = $user->id; 
             $student->course = $request->extra_field; 
             $student->save();
-            $newstudent=Student::where('user_id', $user->id)->first();
-            $tasks=Task::where('course', $request->extra_field)->where('estado', 'En progreso')->get();
+            $newstudent = Student::where('user_id', $user->id)->first();
+            $tasks = Task::where('course', $request->extra_field)->where('estado', 'En progreso')->get();
             foreach ($tasks as $task) {
                 student_task::create([
                     'task_id' => $task->id,
@@ -68,11 +60,12 @@ class LoginController extends Controller
                 ]);
             }
         }
-
+    
         Auth::login($user);
-
+    
         return redirect(route('login'));
     }
+    
 
     public function login(Request $request){
         $credentials = [

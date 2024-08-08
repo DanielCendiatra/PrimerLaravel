@@ -48,13 +48,24 @@
                     <textarea class="form-control mt-2" style="height:150px" name="descripción" placeholder="Descripción..."></textarea>
                 </div>
             </div>
-            <div class="col-xs-12 col-sm-12 col-md-6 mt-2">
+            <div class="col-xs-12 col-sm-12 col-md-4 mt-2">
                 <div class="form-group">
                     <strong>Fecha límite:</strong>
                     <input type="date" name="tarea_date" class="form-control mt-2" id="">
                 </div>
             </div>
-            <div class="col-xs-12 col-sm-12 col-md-6 mt-2">
+            <div class="col-xs-12 col-sm-12 col-md-4 mt-2">
+                <div class="form-group">
+                    <strong>Clase:</strong>
+                    <select name="class" class="form-select mt-2" id="">
+                        <option value="">-- Elige la clase --</option>
+                        @foreach ($classes as $classe)
+                            <option value="{{$classe->id_class}}">{{$classe->name_class}}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-12 col-md-4 mt-2">
                 <div class="form-group">
                     <strong>Curso:</strong>
                     <select name="course" class="form-select mt-2" id="">

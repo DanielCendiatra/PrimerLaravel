@@ -27,6 +27,18 @@
             <h2 class="text-white">Tareas Creadas</h2>
         </div>
     </div>
+    <div class="col-12" style="width: 230px">
+        <form method="GET" action="{{ route('tasks.index') }}" class="form-inline">
+            @csrf
+            <select id="filter" name="filter" class="form-select mt-2" style="background-color: darkgray ; border-color: darkgray" onchange="this.form.submit()">
+                <option value="">Elige una opción</option>
+                @foreach ($classes as $classe)
+                    <option value="{{ $classe->id_class }}" {{ request('filter') == $classe->name_class ? 'selected' : '' }}>{{ $classe->name_class }}</option>
+                @endforeach
+            </select>
+        </form>
+    </div>
+
 
     @if (Session::get('success'))
         <div class="alert alert-success mt-2">

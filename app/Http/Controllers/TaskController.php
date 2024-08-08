@@ -27,15 +27,28 @@ class TaskController extends Controller
         $user = Auth::user();
 
         if ($user->rol == 'Docente') {
-            $classe = Classe::where('teacher_id', $user->id)->first();
-            if ($classe) {
-                $tasks = Task::where('class', $classe->id_class)->oldest()->paginate(10);
+            $classes = Classe::where('teacher_id', $user->id)->get();
+            
+            // Verificar si se aplicó un filtro
+            $selectedClass = request('filter');
+            
+            if ($selectedClass) {
+                // Si hay un filtro, mostrar las tareas de la clase seleccionada
+                $tasks = Task::where('class', $selectedClass)->oldest()->paginate(10);
             } else {
-                $tasks = collect(); 
+                // Si no hay filtro, mostrar las tareas de la primera clase del docente
+                $classe = Classe::where('teacher_id', $user->id)->first();
+                if ($classe) {
+                    $tasks = Task::where('class', $classe->id_class)->oldest()->paginate(10);
+                } else {
+                    // Si el docente no tiene ninguna clase, no mostrar tareas
+                    $tasks = collect(); 
+                }
             }
-
-            return view('index', ['tasks' => $tasks]);
+    
+            return view('index', ['tasks' => $tasks, 'classes' => $classes]);
         } 
+
         else if ($user->rol == 'Administrador'){
             $query = Task::join('classes', 'tasks.class', '=', 'classes.id_class')
             ->join('courses', 'tasks.course', '=', 'courses.id_course')
@@ -106,8 +119,10 @@ class TaskController extends Controller
      */
     public function create(): View
     {
+        $user = Auth::user();
+        $classes = Classe::where('teacher_id', $user->id)->get();
         $courses = Course::all();  
-        return view('crear', ['courses'=> $courses]);
+        return view('crear', ['courses'=> $courses , 'classes'=> $classes]);
     }
 
     /**
@@ -120,6 +135,7 @@ class TaskController extends Controller
             'descripción' => 'required',
             'tarea_date' => 'required|date',
             'course' => 'required|exists:courses,id_course',
+            'class' => 'required|exists:classes,id_class'
         ]);
 
         $user = Auth::user();
@@ -133,7 +149,7 @@ class TaskController extends Controller
                     'tarea_date' => $request->tarea_date,
                     'course' => $request->course,
                     'estado' => 'En progreso',
-                    'class' => $classe->id_class,
+                    'class' => $request->class,
                 ]);
 
                 // Obtener todos los estudiantes del curso especificado

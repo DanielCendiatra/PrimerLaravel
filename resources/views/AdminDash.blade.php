@@ -16,10 +16,10 @@
                     <a href="" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Usuarios</a>
                 </div>
                 <div>
-                    <a href="" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Clases</a>
+                    <a href="{{route('classes.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Clases</a>
                 </div>
                 <div>
-                    <a href="" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8">Cursos</a>
+                    <a href="{{route('courses.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8">Cursos</a>
                 </div>
                 <form action="{{route("logout")}}" method="POST" class="d-inline" style="margin-left: 20px">
                     @csrf

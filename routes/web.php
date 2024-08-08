@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ClasseController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Student_taskController;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +30,9 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/tasks/chart-data', [TaskController::class, 'getTasksByClass']);
 Route::resource('/Calificar', Student_taskController::class)->middleware('auth');
+Route::resource('/classes', ClasseController::class)->middleware('auth');
+Route::patch('/classes/restore/{id_class}', [ClasseController::class, 'restore'])->name('classes.restore');
+Route::resource('/courses', CourseController::class)->middleware('auth');
 Route::resource('/tasks', TaskController::class)->middleware('auth');
 Route::resource('/entrega', TaskController::class)->middleware('auth');
 Route::patch('/tasks/{task}/entregar', [TaskController::class, 'entregar'])->name('tasks.entregar');

@@ -1,8 +1,6 @@
 @extends('Layout.base')
 
 @section('content')
-
-
 @if($errors->any())
     <div>
         <ul>
@@ -56,11 +54,7 @@
         var extraFieldLabel = document.getElementById('extra-field-label');
         var extraFieldSelect = document.getElementById('extra-field-select');
 
-        if (this.value === 'Docente') {
-            extraFieldLabel.innerText = 'Clase';
-            extraField.style.display = 'block';
-            extraFieldSelect.innerHTML = @json($classes).map(c => `<option value="${c.id_class}">${c.name_class}</option>`).join('');
-        } else if (this.value === 'Alumno') {
+        if (this.value === 'Alumno') {
             extraFieldLabel.innerText = 'Curso';
             extraField.style.display = 'block';
             extraFieldSelect.innerHTML = @json($courses).map(c => `<option value="${c.id_course}">${c.name_course}</option>`).join('');
