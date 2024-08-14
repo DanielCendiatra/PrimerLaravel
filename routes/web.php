@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Student_taskController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,9 +30,13 @@ Route::post('/iniciar-sesion', [LoginController::class, 'login'])->name('iniciar
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/tasks/chart-data', [TaskController::class, 'getTasksByClass']);
+Route::resource('/users', UserController::class)->middleware('auth');
 Route::resource('/Calificar', Student_taskController::class)->middleware('auth');
 Route::resource('/classes', ClasseController::class)->middleware('auth');
 Route::patch('/classes/restore/{id_class}', [ClasseController::class, 'restore'])->name('classes.restore');
+Route::patch('/courses/restore/{id_course}', [CourseController::class, 'restore'])->name('courses.restore');
+Route::patch('/users/restore/{id}', [UserController::class, 'restore'])->name('users.restore');
+Route::patch('/tasks/restore/{id}', [TaskController::class, 'restore'])->name('tasks.restore');
 Route::resource('/courses', CourseController::class)->middleware('auth');
 Route::resource('/tasks', TaskController::class)->middleware('auth');
 Route::resource('/entrega', TaskController::class)->middleware('auth');

@@ -13,7 +13,7 @@
             </div>
             <ul style="display: flex; align-items: center; margin-top: 1%">
                 <div>
-                    <a href="" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Usuarios</a>
+                    <a href="{{route('users.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Usuarios</a>
                 </div>
                 <div>
                     <a href="{{route('classes.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Clases</a>

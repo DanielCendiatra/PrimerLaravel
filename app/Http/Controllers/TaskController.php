@@ -35,18 +35,21 @@ class TaskController extends Controller
             if ($selectedClass) {
                 // Si hay un filtro, mostrar las tareas de la clase seleccionada
                 $tasks = Task::where('class', $selectedClass)->oldest()->paginate(10);
+                $deletasks = DB::table('tasks')->whereNotNull('deleted_at')->where('class', $selectedClass)->oldest()->paginate(10);
             } else {
                 // Si no hay filtro, mostrar las tareas de la primera clase del docente
                 $classe = Classe::where('teacher_id', $user->id)->first();
                 if ($classe) {
                     $tasks = Task::where('class', $classe->id_class)->oldest()->paginate(10);
+                    $deletasks = DB::table('tasks')->whereNotNull('deleted_at')->where('class', $classe->id_class)->oldest()->paginate(10);
                 } else {
                     // Si el docente no tiene ninguna clase, no mostrar tareas
-                    $tasks = collect(); 
+                    $tasks = collect();
+                    $deletasks = collect(); 
                 }
             }
     
-            return view('index', ['tasks' => $tasks, 'classes' => $classes]);
+            return view('index', ['tasks' => $tasks, 'classes' => $classes, 'deletasks' => $deletasks]);
         } 
 
         else if ($user->rol == 'Administrador'){
@@ -272,6 +275,42 @@ class TaskController extends Controller
             ->get();
 
         return response()->json($tasksByClass);
+    }
+
+    public function restore($id): RedirectResponse
+    {
+        $task = Task::withTrashed()->where('id', $id)->first();
+        if ($task) {
+            $task->restore();
+            student_task::withTrashed()->where('task_id', $task->id)->restore();
+
+            if ($task->tarea_date < Carbon::now()) {
+                $task->update(['estado' => 'Finalizada']);
+            } else if ($task->tarea_date > Carbon::now()) {
+                $task->update(['estado' => 'En progreso']);
+    
+                // Crear student_tasks para los estudiantes del curso que no tengan esta tarea
+                $students = Student::where('course', $task->course)->get();
+    
+                foreach ($students as $student) {
+                    // Verificar si el student ya tiene esta tarea
+                    $existingStudentTask = student_task::where('task_id', $task->id)
+                        ->where('student_id', $student->id_student)
+                        ->first();
+    
+                    if (!$existingStudentTask) {
+                        // Crear una nueva tarea para el student
+                        student_task::create([
+                            'task_id' => $task->id,
+                            'student_id' => $student->id_student,
+                            'estado' => 'Vacia'
+                        ]);
+                    }
+                }
+            }
+            return redirect()->route('tasks.index')->with('success', 'La tarea fue restaurado exitosamente.');
+        }  
+        return redirect()->route('tasks.index')->with('error', 'La tarea no se encontró o ya fue restaurada.');
     }
 
 }

@@ -16,7 +16,7 @@
                     <a href="{{route('tasks.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Volver</a>
                 </div>
                 <div>
-                    <a href="" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Usuarios</a>
+                    <a href="{{route('users.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Usuarios</a>
                 </div>
                 <div>
                     <a href="{{route('courses.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Cursos</a>
@@ -85,6 +85,7 @@
                         </td>
                         <td>
                             <select class="form-control" id="docente" name="docente" style="background: transparent ; border: none ; outline: none ; color:#fff ">
+                                <option value="">Sin Docente Asignado</option>
                                 @foreach ($teachers as $teacher)
                                     <option value="{{$teacher->id}}" {{ $teacher->id == $clase->teacher_id ? 'selected' : '' }} style="color: black">{{$teacher->name}}</option>
                                 @endforeach
@@ -146,7 +147,7 @@
             @endforeach
             
         </table>
-        {{$clases->links()}}
+        {{$deleteclases->links()}}
     </div>
 </div>
 <script>

@@ -39,7 +39,11 @@
         </form>
     </div>
 
-
+    <div class="col-12 mt-4">
+        <div>
+            <h3 class="text-white">Tareas Activas</h3>
+        </div>
+    </div>
     @if (Session::get('success'))
         <div class="alert alert-success mt-2">
             <strong>{{Session::get('success')}}</strong><br>
@@ -93,12 +97,62 @@
         </table>
         {{$tasks->links()}}
     </div>
+    <div class="col-12 mt-4">
+        <div>
+            <h3 class="text-white">Tareas Eliminadas</h3>
+        </div>
+    </div>
+    <div class="col-12 mt-4">
+        <table class="table table-bordered text-white">
+            <tr class="text-secondary">
+                <th style="color: #fff">Tarea</th>
+                <th style="color: #fff">Descripción</th>
+                <th style="color: #fff">Fecha</th>
+                <th style="color: #fff">Ultimo Estado</th>
+                <th style="color: #fff">Habilitar</th>
+            </tr>
+            @foreach ($deletasks as $deletask)
+                <tr>
+                    <td class="fw-bold">{{$deletask->Titulo}}</td>
+                    <td>{{$deletask->descripción}}</td>
+                    <td>
+                        {{$deletask->tarea_date}}
+                    </td>
+                    @if ($deletask->estado == 'Pendiente')
+                        <td style="text-align: center ; padding-top: 20px">
+                            <span class="badge fs-6" style="background-color: #E67E22">{{$deletask->estado}}</span>
+                        </td>
+                    @endif
+                    @if ($deletask->estado == 'Finalizada')
+                        <td style="text-align: center ; padding-top: 20px">
+                            <span class="badge fs-6" style="background-color: #2ECC71">{{$deletask->estado}}</span>
+                        </td>
+                    @endif
+                    @if ($deletask->estado == 'En progreso')
+                        <td style="text-align: center ; padding-top: 20px">
+                            <span class="badge fs-6" style="background-color: #F1C40F">{{$deletask->estado}}</span>
+                        </td>
+                    @endif
+
+                    <td style="display: flex ;  justify-content: center ; align-items: center">
+                        <form action="{{route("tasks.restore", $deletask->id)}}" method="POST" class="d-inline m-2">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="btn btn-danger delete-task-button" style="background-color: #E67E22 ; border-color:#E67E22">Habilitar</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+            
+        </table>
+        {{$tasks->links()}}
+    </div>
 </div>
 <script>
     document.querySelectorAll('.delete-task-button').forEach(button => {
         button.addEventListener('click', function(event){
             event.preventDefault();
-            if(confirm('¿Estas seguro de Eliminar esta tarea?')){
+            if(confirm('¿Estas seguro de realizar esta acción? , esto tambien afectara a las notas y entregas de los alumnos sobre esta tarea')){
                 this.closest('form').submit();
             }
         });
