@@ -20,12 +20,12 @@ class UserController extends Controller
      */
     public function index(Request $request): View
     {
-        switch ($request->filter) {
+        $filter = $request->filter;
+        switch ($filter) {
             case 'Administradores':
                 $tipe = '1';
-                $users = User::where('rol', 'Administrador')->whereNull('deleted_at')->oldest()->paginate(10);;
-                return view('ListUser' , ['tipe' => $tipe , 'users' => $users]);
-            break;
+                $users = User::where('rol', 'Administrador')->whereNull('deleted_at')->oldest()->paginate(10);
+                break;
             case 'Docentes':
                 $tipe = '2';
                 $users = User::where('users.rol', 'Docente')    
@@ -35,8 +35,7 @@ class UserController extends Controller
                     ->select('users.*', DB::raw('GROUP_CONCAT(classes.name_class SEPARATOR ", ") as classes'))
                     ->groupBy('users.id', 'users.name', 'users.email', 'users.created_at', 'users.updated_at')
                     ->oldest()->paginate(10);
-                    return view('ListUser', ['tipe' => $tipe, 'users' => $users]);
-            break;
+                break;
             case 'Alumnos':
                 $tipe = '3';
                 $users = User::Join('students', 'users.id', '=', 'students.user_id')
@@ -45,24 +44,25 @@ class UserController extends Controller
                     ->whereNull('users.deleted_at')
                     ->select('users.*', 'courses.name_course as course')
                     ->oldest()->paginate(10);
-                return view('ListUser' , ['tipe' => $tipe , 'users' => $users]);
-            break;
+                break;
             case 'Usuarios Activos':
                 $tipe = '4';
                 $users = User::whereNull('deleted_at')->oldest()->paginate(10);
-                return view('ListUser' , ['tipe' => $tipe , 'users' => $users]);
-            break;
+                break;
             case 'Usuarios Eliminados':
                 $tipe = '5';
                 $users = DB::table('users')->whereNotNull('deleted_at')->oldest()->paginate(10);
-                return view('ListUser' , ['tipe' => $tipe , 'users' => $users]);
-            break;
-            case '':
+                break;
+            default:
                 $tipe = '6';
                 return view('ListUser' , ['tipe' => $tipe]);
-            break;
         }
-        
+
+        return view('ListUser', [
+            'tipe' => $tipe,
+            'users' => $users,
+            'filter' => $filter
+        ]);
     }
 
     /**

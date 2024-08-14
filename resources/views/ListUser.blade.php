@@ -80,7 +80,7 @@
                 </tr>
                 @endforeach
             </table>
-            {{ $users->links() }}
+            {{ $users->appends(['filter' => request('filter')])->links() }}
         @endif
         @if ($tipe == '2')
             <table class="table table-bordered text-white">
@@ -110,7 +110,7 @@
                 </tr>
                 @endforeach
             </table>
-            {{ $users->links() }}
+            {{ $users->appends(['filter' => request('filter')])->links() }}
         @endif
         @if ($tipe == '3')
             <table class="table table-bordered text-white">
@@ -140,7 +140,7 @@
                 </tr>
                 @endforeach
             </table>
-            {{ $users->links() }}
+            {{ $users->appends(['filter' => request('filter')])->links() }}
         @endif
         @if ($tipe == '4')
             <table class="table table-bordered text-white">
@@ -184,7 +184,7 @@
                 </tr>
             @endforeach
             </table>
-            {{ $users->links() }}
+            {{ $users->appends(['filter' => request('filter')])->links() }}
         @endif
         @if ($tipe == '5')
             <table class="table table-bordered text-white">
@@ -227,7 +227,7 @@
                 </tr>
                 @endforeach
             </table>
-            {{ $users->links() }}
+            {{ $users->appends(['filter' => request('filter')])->links() }}
         @endif
     </div>
 </div>
