@@ -44,7 +44,7 @@
         <form method="GET" action="{{ route('users.index') }}" class="form-inline">
             @csrf
             <select id="filter" name="filter" class="form-select mt-2" style="background-color: darkgray ; border-color: darkgray" onchange="this.form.submit()">
-                <option value="" {{ request('filter') == '' ? 'selected' : '' }}>Elige una opción</option>
+                    <option value="" {{ request('filter') == '' ? 'selected' : '' }}>Elige una opción</option>
                     <option value="Usuarios Activos" {{ request('filter') == 'Usuarios Activos' ? 'selected' : '' }}>Usuarios Activos</option>
                     <option value="Administradores" {{ request('filter') == 'Administradores' ? 'selected' : '' }}>Administradores</option>
                     <option value="Docentes" {{ request('filter') == 'Docentes' ? 'selected' : '' }}>Docentes</option>

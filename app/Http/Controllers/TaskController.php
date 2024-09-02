@@ -28,27 +28,40 @@ class TaskController extends Controller
 
         if ($user->rol == 'Docente') {
             $classes = Classe::where('teacher_id', $user->id)->get();
-            
-            // Verificar si se aplicó un filtro
             $selectedClass = request('filter');
-            
+        
             if ($selectedClass) {
-                // Si hay un filtro, mostrar las tareas de la clase seleccionada
-                $tasks = Task::where('class', $selectedClass)->oldest()->paginate(10);
-                $deletasks = DB::table('tasks')->whereNotNull('deleted_at')->where('class', $selectedClass)->oldest()->paginate(10);
+                $tasks = Task::where('class', $selectedClass)
+                    ->oldest()
+                    ->paginate(10, ['*'], 'tasksPage')
+                    ->appends(['filter' => $selectedClass]);
+
+        
+                $deletasks = Task::onlyTrashed()
+                    ->where('class', $selectedClass)
+                    ->oldest()
+                    ->paginate(10, ['*'], 'deletasksPage')
+                    ->appends(['filter' => $selectedClass]);
+   
             } else {
-                // Si no hay filtro, mostrar las tareas de la primera clase del docente
                 $classe = Classe::where('teacher_id', $user->id)->first();
                 if ($classe) {
-                    $tasks = Task::where('class', $classe->id_class)->oldest()->paginate(10);
-                    $deletasks = DB::table('tasks')->whereNotNull('deleted_at')->where('class', $classe->id_class)->oldest()->paginate(10);
+                    $tasks = Task::where('class', $classe->id_class)
+                        ->oldest()
+                        ->paginate(10)
+                        ->appends(['filter' => $classe->id_class]);
+        
+                    $deletasks = Task::onlyTrashed()
+                        ->where('class', $classe->id_class)
+                        ->oldest()
+                        ->paginate(10)
+                        ->appends(['filter' => $classe->id_class]);
                 } else {
-                    // Si el docente no tiene ninguna clase, no mostrar tareas
                     $tasks = collect();
-                    $deletasks = collect(); 
+                    $deletasks = collect();
                 }
             }
-    
+        
             return view('index', ['tasks' => $tasks, 'classes' => $classes, 'deletasks' => $deletasks]);
         } 
 

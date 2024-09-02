@@ -102,7 +102,7 @@
             @endforeach
             
         </table>
-        {{ $tasks->links() }}
+        {{$tasks->appends(request()->query())->links()}}
     </div>
 </div>
 @endsection

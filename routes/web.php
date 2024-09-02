@@ -41,4 +41,4 @@ Route::resource('/courses', CourseController::class)->middleware('auth');
 Route::resource('/tasks', TaskController::class)->middleware('auth');
 Route::resource('/entrega', TaskController::class)->middleware('auth');
 Route::patch('/tasks/{task}/entregar', [TaskController::class, 'entregar'])->name('tasks.entregar');
-
+Route::get('/report/student/{id_student}', [Student_taskController::class, 'generateReport'])->name('student.report');

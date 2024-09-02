@@ -49,6 +49,7 @@
                 <th style="color: #fff">Tareas Entregadas</th>
                 <th style="color: #fff">Tareas con Entrega Tardia</th>
                 <th style="color: #fff">Tareas Calificadas</th>
+                <th style="color: #fff">Descargar Reporte</th>
             </tr>
             @foreach ($students as $student)
                 <tr>
@@ -58,6 +59,9 @@
                     <td>{{$student->delivered_tasks}}</td>
                     <td>{{$student->late_tasks}}</td>
                     <td>{{$student->graded_tasks}}</td>
+                    <td style="display: flex ;  justify-content: center ; align-items: center">
+                        <a href="{{route("student.report" , [$student->id_student])}}" class="btn btn-warning m-2" style="background-color: #2ECC71 ; border-color:#2ECC71">Descargar</a>
+                    </td>
                 </tr>
             @endforeach
             

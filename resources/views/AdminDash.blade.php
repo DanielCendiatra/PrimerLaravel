@@ -107,7 +107,7 @@
             @endforeach
             
         </table>
-        {{$tasks->links()}}
+        {{$tasks->appends(request()->query())->links()}}
     </div>
     <div>
         <h1 class="mb-4 mt-4" style="text-align: center">Estadisticas</h1>

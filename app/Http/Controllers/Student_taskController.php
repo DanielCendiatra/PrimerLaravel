@@ -11,6 +11,7 @@ use Illuminate\Console\View\Components\Task as ComponentsTask;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 
@@ -86,4 +87,76 @@ class Student_taskController extends Controller
     {
         //
     }
+
+    public function generateReport($id_student)
+    {
+        // Obtener el estudiante y su curso usando la clave primaria correcta
+        $student = Student::where('id_student', $id_student)->firstOrFail();
+        $course_id = $student->course;
+        $course_s = Course::where('id_course', $student->course)->first();
+    
+        // Obtener las clases que tienen al menos una tarea asociada con el curso del estudiante
+        $classes = Classe::whereHas('tasks', function ($query) use ($course_id) {
+            $query->where('course', $course_id);
+        })->get();
+    
+        $data = [];
+    
+        // Para cada clase, calcular el promedio de las notas de las tareas finalizadas
+        foreach ($classes as $class) {
+            $promedio = student_task::join('tasks', 'student_tasks.task_id', '=', 'tasks.id')
+                ->where('student_tasks.student_id', $student->id_student) 
+                ->where('tasks.class', $class->id_class)
+                ->where('tasks.estado', 'Finalizada')
+                ->whereNull('student_tasks.deleted_at')
+                ->avg('student_tasks.note');
+
+            $promedio = round($promedio, 1);
+
+            $tareas_vacias = student_task::join('tasks', 'student_tasks.task_id', '=', 'tasks.id')
+                ->where('student_tasks.student_id', $student->id_student)
+                ->where('tasks.class', $class->id_class)
+                ->where('tasks.estado', 'Finalizada')
+                ->where('student_tasks.estado', 'Vacia')
+                ->whereNull('student_tasks.deleted_at')
+                ->count();
+
+            $Ntasks = task::where('class', $class->id_class)
+                ->where('course', $student->course)
+                ->where('estado', 'Finalizada')
+                ->whereNull('deleted_at')
+                ->count();
+            
+            if ($promedio <= 2.0){
+                $desempeño = 'Insuficiente';
+            }
+            if ($promedio > 2.0 && $promedio <= 3.3){
+                $desempeño = 'Medio Bajo';
+            }
+            if ($promedio >= 3.4 && $promedio < 4.0){
+                $desempeño = 'Medio';
+            }
+            if ($promedio >= 4.0 && $promedio <= 4.6){
+                $desempeño = 'Alto';
+            }
+            if ($promedio >= 4.7){
+                $desempeño = 'Sobresaliente';
+            }
+
+            $data[] = [
+                'class_name' => $class->name_class,
+                'promedio' => $promedio,
+                'Ntasks' => (int) $Ntasks,
+                'tareas_vacias' => (int) $tareas_vacias,
+                'desempeño' => $desempeño
+            ];
+        }
+    
+        // Generar el PDF usando los datos
+        $pdf = Pdf::loadView('certificado', compact('student', 'data', 'course_s'));
+    
+        // Descargar el PDF
+        return $pdf->download('certificado' . $student->user->name . '.pdf');
+    }
+
 }
