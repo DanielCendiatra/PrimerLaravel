@@ -26,7 +26,7 @@ class ClasseController extends Controller
             ->whereNull('classes.deleted_at')
             ->whereNull('tasks.deleted_at')
             ->groupBy('classes.teacher_id', 'classes.id_class', 'classes.name_class', 'classes.created_at', 'users.name', 'users.email')
-            ->oldest()->paginate(10);
+            ->oldest()->get();
 
         $deleteclases = DB::table('classes')
             ->leftJoin('users', 'classes.teacher_id', '=', 'users.id')
@@ -34,7 +34,7 @@ class ClasseController extends Controller
             ->select('classes.id_class', 'classes.name_class', 'classes.created_at', 'users.name as nombre', 'users.email as correo', DB::raw('count(tasks.id) as total'))
             ->whereNotNull('classes.deleted_at')
             ->groupBy('classes.id_class', 'classes.name_class', 'classes.created_at', 'users.name', 'users.email')
-            ->oldest()->paginate(10);
+            ->oldest()->get();
 
         $teachers = User::where('rol' , 'Docente')->get();  
     

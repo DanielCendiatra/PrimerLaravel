@@ -22,10 +22,12 @@ class student_task extends Model
         return $this->belongsTo(Student::class); 
     }
 
+    public function student_tasks()
+    {
+        return $this->hasMany(Student_task::class, 'student_id', 'id_student');
+    }
+
 }
-
-
-
 
 
     

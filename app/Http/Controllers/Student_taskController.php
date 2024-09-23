@@ -20,9 +20,23 @@ class Student_taskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request): View
     {
-        //
+        $user = Auth::user();
+
+        $student = Student::where('user_id', $user->id)->first();
+            if ($student) {
+                $tasks = DB::table('tasks')
+                    ->join('student_tasks', 'tasks.id', '=', 'student_tasks.task_id')
+                    ->join('classes', 'tasks.class', '=', 'classes.id_class')
+                    ->where('student_tasks.student_id', $student->id_student)
+                    ->where('student_tasks.deleted_at', Null)
+                    ->select('tasks.*', 'student_tasks.estado as student_task_estado' , 'student_tasks.note as student_task_nota', 'classes.name_class as name_class')->oldest()->get();
+            } else {
+                $tasks = collect(); 
+            }
+
+            return view('entrega', ['tasks' => $tasks]);
     }
 
     /**
@@ -60,7 +74,7 @@ class Student_taskController extends Controller
                     ->where('student_tasks.task_id', $id)
                     ->whereNull('student_tasks.deleted_at')
                     ->select('student_tasks.*', 'users.name as name_student', 'users.email as correo_student')
-                    ->oldest()->paginate(10);
+                    ->oldest()->get();
         return view('Calificar', ['task' => $task , 'datatasks' => $query]);
     }
  

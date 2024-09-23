@@ -1,245 +1,495 @@
-@extends('Layout.base')
+@extends('Layout.master')
 
+@section('css')
+	<link href="{{ URL::asset('build/plugins/datatable/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ URL::asset('build/css/extra-icons.css') }}">
+@endsection 
 @section('content')
 <div class="row">
-    <div>
-        <header style="background-color: #f1c40e; width: 100%; position: fixed; top: 0; left: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; height: 100px; z-index: 1000" id="cabecera">
-            <div class="iden_per">
-                <div>
-                    <div class="item">
-                        <p style="color: black;  font-size: 25px; margin-top: 2%"><strong>{{Auth::user()->name}}</strong></p>
+    @if (Session::get('success'))
+        <div class="alert alert-border-success alert-dismissible fade show mx-3" style="width: 97%">
+            <div class="d-flex align-items-center">
+                <div class="font-35 text-success"><span class="material-icons-outlined fs-2">check_circle</span>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-0 text-success">Felicidades</h6>
+                    <div class=""><strong>{{Session::get('success')}}</strong><br></div>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    @if (Session::get('error'))
+        <div class="alert alert-border-danger alert-dismissible fade show">
+            <div class="d-flex align-items-center">
+                <div class="font-35 text-danger"><span class="material-icons-outlined fs-2">report_gmailerrorred</span>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-0 text-danger">Error</h6>
+                    <div class=""><strong>{{Session::get('error')}}</strong></div>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    <div class="col-12 mt-4">
+        @if ($tipe == '1')
+            <h6 class="mb-3 mt-4 text-uppercase">Administradores</h6>
+            <hr>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" style="width:100%" id="table_users_ad">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Dirección</th>
+                                    <th>Fecha de Nacimiento</th>
+                                    <th>Celular</th>
+                                    <th>Genero</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
+                                </tr> 
+                            </thead> 
+                            <tbody>
+                                @foreach ($users as $user)
+                                    <tr>
+                                        <td>{{ $user->name}} {{ $user->lastname}}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $user->address }}</td>
+                                        <td>{{ $user->date}}</td>
+                                        <td>{{ $user->phone}}</td>
+                                        <td>{{ $user->genero}}</td>
+                                        <td>
+                                            <div class="col" style="margin-top: 15% ; margin-left: 10%">
+                                                <a href="{{route("users.edit" , [$user->id])}}"><button type="button" class="btn btn-outline-warning px-4 d-flex gap-2"><i class="lni lni-highlight-alt mt-1"></i>Editar</button></a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form action="{{route("users.destroy", $user->id)}}" method="POST" class="d-inline m-2">
+                                                @csrf
+                                                @method('DELETE')
+                                                    <div class="col" style="margin-left: 10%">
+                                                        <button type="button" class="btn btn-outline-danger px-4 d-flex gap-2" data-bs-toggle="modal" data-bs-target="#deleteModal{{$user->id}}"><i class="lni lni-ban mt-1"></i>Eliminar</button>
+                                                        <div class="modal fade" id="deleteModal{{$user->id}}" tabindex="-1" aria-labelledby="deleteModalLabel{{$user->id}}" aria-hidden="true">
+                                                            <div class="modal-dialog">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="deleteModalLabel{{$user->id}}">Confirmación</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">¿Esta seguro de eliminar a este usuario? , Una vez elimines al usuario ya no podrá ingresar al sistema impidiendole hacer cual acción dentro de el.</div>
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                        <button type="submit" class="btn btn-primary">Eliminar</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Dirección</th>
+                                    <th>Fecha de Nacimiento</th>
+                                    <th>Celular</th>
+                                    <th>Genero</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
+                                </tr> 
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
             </div>
-            <ul style="display: flex; align-items: center; margin-top: 1%">
-                <div>
-                    <a href="{{route('tasks.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Volver</a>
-                </div>
-                <div>
-                    <a href="{{route('classes.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Clases</a>
-                </div>
-                <div>
-                    <a href="{{route('courses.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Cursos</a>
-                </div>
-                <form action="{{route("logout")}}" method="POST" class="d-inline" style="margin-left: 20px">
-                    @csrf
-                    <button type="submit" class="btn btn-danger">Cerrar Sesion</button>
-                </form>
-            </ul>
-        </header>
-    </div><br><br><br><br><br><br>
-    <div class="col-12">
-        <div>
-            <h2 class="text-white">Usuarios Existentes</h2>
-        </div>
-    </div>
-
-    @if (Session::get('success'))
-        <div class="alert alert-success mt-2">
-            <strong>{{Session::get('success')}}</strong><br>
-        </div>
-    @endif
-
-    <div class="col-12" style="width: 230px">
-        <form method="GET" action="{{ route('users.index') }}" class="form-inline">
-            @csrf
-            <select id="filter" name="filter" class="form-select mt-2" style="background-color: darkgray ; border-color: darkgray" onchange="this.form.submit()">
-                    <option value="" {{ request('filter') == '' ? 'selected' : '' }}>Elige una opción</option>
-                    <option value="Usuarios Activos" {{ request('filter') == 'Usuarios Activos' ? 'selected' : '' }}>Usuarios Activos</option>
-                    <option value="Administradores" {{ request('filter') == 'Administradores' ? 'selected' : '' }}>Administradores</option>
-                    <option value="Docentes" {{ request('filter') == 'Docentes' ? 'selected' : '' }}>Docentes</option>
-                    <option value="Alumnos" {{ request('filter') == 'Alumnos' ? 'selected' : '' }}>Alumnos</option>
-                    <option value="Usuarios Eliminados" {{ request('filter') == 'Usuarios Eliminados' ? 'selected' : '' }}>Usuarios Eliminados</option>
-            </select>
-        </form>
-    </div>
-    <div class="col-12 mt-4">
-        @if ($tipe == '1')
-            <table class="table table-bordered text-white">
-                <tr class="text-secondary">
-                    <th style="color: #fff">Nombre</th>
-                    <th style="color: #fff">Correo</th>
-                    <th style="color: #fff">Fecha Creación</th>
-                    <th style="color: #fff">Ultima Actualización</th>
-                    <th style="color: #fff">Acciones</th>
-                </tr>  
-                @foreach ($users as $user)
-                <tr>
-                    <td>{{ $user->name}}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->created_at }}</td>
-                    <td>{{ $user->updated_at}}</td>
-                    <td style="display: flex ;  justify-content: center ; align-items: center">
-                        <a href="{{route("users.edit" , [$user->id])}}" class="btn btn-warning m-2">Editar</a>
-                        <form action="{{route("users.destroy", $user->id)}}" method="POST" class="d-inline m-2">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger delete-task-button">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </table>
-            {{ $users->appends(['filter' => request('filter')])->links() }}
         @endif
         @if ($tipe == '2')
-            <table class="table table-bordered text-white">
-                <tr class="text-secondary">
-                    <th style="color: #fff">Nombre</th>
-                    <th style="color: #fff">Correo</th>
-                    <th style="color: #fff">Fecha Creación</th>
-                    <th style="color: #fff">Ultima Actualización</th>
-                    <th style="color: #fff">Clases</th>
-                    <th style="color: #fff">Acciones</th>
-                </tr>  
-                @foreach ($users as $user)
-                <tr>
-                    <td>{{ $user->name}}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->created_at }}</td>
-                    <td>{{ $user->updated_at}}</td>
-                    <td>{{ $user->classes}}</td>
-                    <td style="display: flex ;  justify-content: center ; align-items: center">
-                        <a href="{{route("users.edit" , [$user->id])}}" class="btn btn-warning m-2">Editar</a>
-                        <form action="{{route("users.destroy", $user->id)}}" method="POST" class="d-inline m-2">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger delete-task-button">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </table>
-            {{ $users->appends(['filter' => request('filter')])->links() }}
+            <h6 class="mb-3 mt-4 text-uppercase">Docentes</h6>
+            <hr> 
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" style="width:100%" id="table_users_d">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Dirección</th>
+                                    <th>Fecha de Nacimiento</th>
+                                    <th>Celular</th>
+                                    <th>Genero</th>
+                                    <th>Clases</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
+                                </tr> 
+                            </thead> 
+                            <tbody>
+                                @foreach ($users as $user)
+                                    <tr>
+                                        <td>{{ $user->name}} {{ $user->lastname}}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $user->address }}</td>
+                                        <td>{{ $user->date}}</td>
+                                        <td>{{ $user->phone}}</td>
+                                        <td>{{ $user->genero}}</td>
+                                        <td>{{ $user->classes}}</td>
+                                        <td>
+                                            <div class="col" style="margin-top: 15%">
+                                                <a href="{{route("users.edit" , [$user->id])}}"><button type="button" class="btn btn-outline-warning px-4 d-flex gap-2"><i class="lni lni-highlight-alt mt-1"></i>Editar</button></a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form action="{{route("users.destroy", $user->id)}}" method="POST" class="d-inline m-2">
+                                                @csrf
+                                                @method('DELETE')
+                                                <div class="col">
+                                                    <button type="button" class="btn btn-outline-danger px-4 d-flex gap-2" data-bs-toggle="modal" data-bs-target="#deleteModal{{$user->id}}"><i class="lni lni-ban mt-1"></i>Eliminar</button>
+                                                    <div class="modal fade" id="deleteModal{{$user->id}}" tabindex="-1" aria-labelledby="deleteModalLabel{{$user->id}}" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="deleteModalLabel{{$user->id}}">Confirmación</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">¿Esta seguro de eliminar a este usuario? , Una vez elimines al usuario ya no podrá ingresar al sistema impidiendole hacer cual acción dentro de el.</div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                    <button type="submit" class="btn btn-primary">Eliminar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Dirección</th>
+                                    <th>Fecha de Nacimiento</th>
+                                    <th>Celular</th>
+                                    <th>Genero</th>
+                                    <th>Clases</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
+                                </tr> 
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
         @endif
         @if ($tipe == '3')
-            <table class="table table-bordered text-white">
-                <tr class="text-secondary">
-                    <th style="color: #fff">Nombre</th>
-                    <th style="color: #fff">Correo</th>
-                    <th style="color: #fff">Fecha Creación</th>
-                    <th style="color: #fff">Ultima Actualización</th>
-                    <th style="color: #fff">Curso</th>
-                    <th style="color: #fff">Acciones</th>
-                </tr>  
-                @foreach ($users as $user)
-                <tr>
-                    <td>{{ $user->name}}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->created_at }}</td>
-                    <td>{{ $user->updated_at}}</td>
-                    <td>{{ $user->course}}</td>
-                    <td style="display: flex ;  justify-content: center ; align-items: center">
-                        <a href="{{route("users.edit" , [$user->id])}}" class="btn btn-warning m-2">Editar</a>
-                        <form action="{{route("users.destroy", $user->id)}}" method="POST" class="d-inline m-2">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger delete-task-button">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </table>
-            {{ $users->appends(['filter' => request('filter')])->links() }}
+            <h6 class="mb-3 mt-4 text-uppercase">Alumnos</h6>
+            <hr>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" style="width:100%" id="table_users_a">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Dirección</th>
+                                    <th>Fecha de Nacimiento</th>
+                                    <th>Celular</th>
+                                    <th>Genero</th>
+                                    <th>Curso</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
+                                </tr>  
+                            </thead>
+                            <tbody>
+                                @foreach ($users as $user)
+                                    <tr>
+                                        <td>{{ $user->name}} {{ $user->lastname}}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $user->address }}</td>
+                                        <td>{{ $user->date}}</td>
+                                        <td>{{ $user->phone}}</td>
+                                        <td>{{ $user->genero}}</td>
+                                        <td>{{ $user->course}}</td>
+                                        <td>
+                                            <div class="col" style="margin-top: 15% ; margin-left: 5%">
+                                                <a href="{{route("users.edit" , [$user->id])}}"><button type="button" class="btn btn-outline-warning px-4 d-flex gap-2"><i class="lni lni-highlight-alt mt-1"></i>Editar</button></a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form action="{{route("users.destroy", $user->id)}}" method="POST" class="d-inline m-2">
+                                                @csrf
+                                                @method('DELETE')
+                                                <div class="col" style="margin-left: 5%">
+                                                    <button type="button" class="btn btn-outline-danger px-4 d-flex gap-2" data-bs-toggle="modal" data-bs-target="#deleteModal{{$user->id}}"><i class="lni lni-ban mt-1"></i>Eliminar</button>
+                                                    <div class="modal fade" id="deleteModal{{$user->id}}" tabindex="-1" aria-labelledby="deleteModalLabel{{$user->id}}" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="deleteModalLabel{{$user->id}}">Confirmación</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">¿Esta seguro de eliminar a este usuario? , Una vez elimines al usuario ya no podrá ingresar al sistema impidiendole hacer cual acción dentro de el.</div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                    <button type="submit" class="btn btn-primary">Eliminar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Dirección</th>
+                                    <th>Fecha de Nacimiento</th>
+                                    <th>Celular</th>
+                                    <th>Genero</th>
+                                    <th>Curso</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
+                                </tr>  
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
         @endif
         @if ($tipe == '4')
-            <table class="table table-bordered text-white">
-                <tr class="text-secondary">
-                    <th style="color: #fff">Nombre</th>
-                    <th style="color: #fff">Correo</th>
-                    <th style="color: #fff">Fecha Creación</th>
-                    <th style="color: #fff">Ultima Actualización</th>
-                    <th style="color: #fff">Rol</th>
-                    <th style="color: #fff">Acciones</th>
-                </tr>  
-                @foreach ($users as $user)
-                <tr>
-                    <td>{{ $user->name}}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->created_at }}</td>
-                    <td>{{ $user->updated_at}}</td>
-                    @if ($user->rol == 'Administrador')
-                        <td>
-                            <span class="badge fs-6" style="background-color: #1414b8">{{ $user->rol }}</span>
-                        </td>
-                    @endif
-                    @if ($user->rol == 'Docente')
-                        <td>
-                            <span class="badge fs-6" style="background-color: #2ECC71">{{ $user->rol }}</span>
-                        </td>
-                    @endif
-                    @if ($user->rol == 'Alumno')
-                        <td>
-                            <span class="badge fs-6" style="background-color: #E67E22">{{ $user->rol }}</span>
-                        </td>
-                    @endif
-                    <td style="display: flex ;  justify-content: center ; align-items: center">
-                        <a href="{{route("users.edit" , [$user->id])}}" class="btn btn-warning m-2">Editar</a>
-                        <form action="{{route("users.destroy", $user->id)}}" method="POST" class="d-inline m-2">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger delete-task-button">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-            </table>
-            {{ $users->appends(['filter' => request('filter')])->links() }}
+            <h6 class="mb-3 mt-4 text-uppercase">Usuarios Activos</h6>
+            <hr>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" style="width:100%" id="table_users_t">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Ultima Actualización</th>
+                                    <th>Rol</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
+                                </tr> 
+                            </thead> 
+                            <tbody>
+                                @foreach ($users as $user)
+                                    <tr>
+                                        <td>{{ $user->name}} {{ $user->lastname}}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $user->created_at }}</td>
+                                        <td>{{ $user->updated_at}}</td>
+                                        @if ($user->rol == 'Administrador')
+                                            <td><span class="lable-table bg-success-subtle text-success rounded border border-success-subtle font-text2 fw-bold">{{ $user->rol }}</span></td>
+                                        @endif
+                                        @if ($user->rol == 'Docente')
+                                            <td><span class="lable-table bg-warning-subtle text-warning rounded border border-warning-subtle font-text2 fw-bold">{{ $user->rol }}</span></td>
+                                        @endif
+                                        @if ($user->rol == 'Alumno')
+                                            <td><span class="lable-table bg-primary-subtle text-primary rounded border border-primary-subtle font-text2 fw-bold">{{ $user->rol }}</span></td>
+                                        @endif
+                                        <td>
+                                            <div class="col" style="margin-top: 12% ; margin-left: 10%">
+                                                <a href="{{route("users.edit" , [$user->id])}}"><button type="button" class="btn btn-outline-warning px-4 d-flex gap-2"><i class="lni lni-highlight-alt mt-1"></i>Editar</button></a>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <form action="{{route("users.destroy", $user->id)}}" method="POST" class="d-inline m-2">
+                                                @csrf
+                                                @method('DELETE')
+                                                <div class="col" style="margin-left: 10%">
+                                                    <button type="button" class="btn btn-outline-danger px-4 d-flex gap-2" data-bs-toggle="modal" data-bs-target="#deleteModal{{$user->id}}"><i class="lni lni-ban mt-1"></i>Eliminar</button>
+                                                    <div class="modal fade" id="deleteModal{{$user->id}}" tabindex="-1" aria-labelledby="deleteModalLabel{{$user->id}}" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="deleteModalLabel{{$user->id}}">Confirmación</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">¿Esta seguro de eliminar a este usuario? , Una vez elimines al usuario ya no podrá ingresar al sistema impidiendole hacer cual acción dentro de el.</div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                    <button type="submit" class="btn btn-primary">Eliminar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Ultima Actualización</th>
+                                    <th>Rol</th>
+                                    <th>Editar</th>
+                                    <th>Eliminar</th>
+                                </tr> 
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
         @endif
         @if ($tipe == '5')
-            <table class="table table-bordered text-white">
-                <tr class="text-secondary">
-                    <th style="color: #fff">Nombre</th>
-                    <th style="color: #fff">Correo</th>
-                    <th style="color: #fff">Fecha Creación</th>
-                    <th style="color: #fff">Fecha de eliminación</th>
-                    <th style="color: #fff">Rol</th>
-                    <th style="color: #fff">Acciones</th>
-                </tr>  
-                @foreach ($users as $user)
-                <tr>
-                    <td>{{ $user->name}}</td>
-                    <td>{{ $user->email }}</td>
-                    <td>{{ $user->created_at }}</td>
-                    <td>{{ $user->deleted_at}}</td>
-                    @if ($user->rol == 'Administrador')
-                        <td>
-                            <span class="badge fs-6" style="background-color: #1414b8">{{ $user->rol }}</span>
-                        </td>
-                    @endif
-                    @if ($user->rol == 'Docente')
-                        <td>
-                            <span class="badge fs-6" style="background-color: #2ECC71">{{ $user->rol }}</span>
-                        </td>
-                    @endif
-                    @if ($user->rol == 'Alumno')
-                        <td>
-                            <span class="badge fs-6" style="background-color: #E67E22">{{ $user->rol }}</span>
-                        </td>
-                    @endif
-                    <td style="display: flex ;  justify-content: center ; align-items: center">
-                        <form action="{{route("users.restore", $user->id)}}" method="POST" class="d-inline m-2">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="btn delete-task-button" style="background-color: #E67E22 ; border-color:#E67E22">Habilitar</button>
-                        </form>
-                    </td>
-                </tr>
-                @endforeach
-            </table>
-            {{ $users->appends(['filter' => request('filter')])->links() }}
+            <h6 class="mb-3 mt-4 text-uppercase">Usuarios Eliminados</h6>
+            <hr>
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-bordered" style="width:100%" id="table_users_e">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Genero</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Fecha de eliminación</th>
+                                    <th>Rol</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>  
+                            <tbody>
+                                @foreach ($users as $user)
+                                    <tr>
+                                        <td>{{ $user->name}} {{ $user->lastname}}</td>
+                                        <td>{{ $user->email }}</td>
+                                        <td>{{ $user->genero }}</td>
+                                        <td>{{ $user->created_at }}</td>
+                                        <td>{{ $user->deleted_at}}</td>
+                                        @if ($user->rol == 'Administrador')
+                                            <td><span class="lable-table bg-success-subtle text-success rounded border border-success-subtle font-text2 fw-bold">{{ $user->rol }}</span></td>
+                                        @endif
+                                        @if ($user->rol == 'Docente')
+                                            <td><span class="lable-table bg-warning-subtle text-warning rounded border border-warning-subtle font-text2 fw-bold">{{ $user->rol }}</span></td>
+                                        @endif
+                                        @if ($user->rol == 'Alumno')
+                                            <td><span class="lable-table bg-primary-subtle text-primary rounded border border-primary-subtle font-text2 fw-bold">{{ $user->rol }}</span></td>
+                                        @endif
+                                        <td>
+                                            <form action="{{route("users.restore", $user->id)}}" method="POST" class="d-inline m-2">
+                                                @csrf
+                                                @method('PATCH')
+                                                <div class="col" class="col" style="margin-bottom: 10% ; margin-top: 10% ; margin-left: 20%">
+                                                    <button type="button" class="btn btn-outline-primary px-4 raised d-flex gap-2"  data-bs-toggle="modal" data-bs-target="#restoreModal{{$user->id}}"><i class="lni lni-consulting fs-5" style="margin-top: 2px"></i>Restaurar</button>
+                                                    <div class="modal fade" id="restoreModal{{$user->id}}" tabindex="-1" aria-labelledby="restoreModalLabel{{$user->id}}" aria-hidden="true">
+                                                        <div class="modal-dialog">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="restoreModalLabel{{$user->id}}">Confirmación</h5>
+                                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                                </div>
+                                                                <div class="modal-body">¿Esta seguro de habilitar a este usuario? , una vez restaures a este usuario, podra volver a ingresar al sistema y podra nuevamente realizar las acciones que tenga permitidas segun su rol; en caso de ser un alumno se volveran a habilitar sus tareas</div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                    <button type="submit" class="btn btn-primary">Restaurar</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Correo</th>
+                                    <th>Genero</th>
+                                    <th>Fecha Creación</th>
+                                    <th>Fecha de eliminación</th>
+                                    <th>Rol</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
         @endif
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    document.querySelectorAll('.delete-task-button').forEach(button => {
-        button.addEventListener('click', function(event){
-            event.preventDefault();
-            if(confirm('¿Estas seguro de habilitar este usuario?')){
-                this.closest('form').submit();
-            }
-        });
-    });
-</script>
 @endsection
+@section('scripts')  
+
+  <script src="{{ URL::asset('build/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ URL::asset('build/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+    <script>
+		$(document).ready(function() {
+			var table = $('#table_users_ad').DataTable( {
+				lengthChange: false,
+				buttons: [ 'copy', 'excel', 'pdf', 'print']
+			} );
+		 
+			table.buttons().container()
+				.appendTo( '#table_users_ad_wrapper .col-md-6:eq(0)' );
+		} );
+	</script>
+    <script>
+		$(document).ready(function() {
+			var table = $('#table_users_d').DataTable( {
+				lengthChange: false,
+				buttons: [ 'copy', 'excel', 'pdf', 'print']
+			} );
+		 
+			table.buttons().container()
+				.appendTo( '#table_users_d_wrapper .col-md-6:eq(0)' );
+		} );
+	</script>
+    <script>
+		$(document).ready(function() {
+			var table = $('#table_users_a').DataTable( {
+				lengthChange: false,
+				buttons: [ 'copy', 'excel', 'pdf', 'print']
+			} );
+		 
+			table.buttons().container()
+				.appendTo( '#table_users_a_wrapper .col-md-6:eq(0)' );
+		} );
+	</script>
+    <script>
+		$(document).ready(function() {
+			var table = $('#table_users_e').DataTable( {
+				lengthChange: false,
+				buttons: [ 'copy', 'excel', 'pdf', 'print']
+			} );
+		 
+			table.buttons().container()
+				.appendTo( '#table_users_e_wrapper .col-md-6:eq(0)' );
+		} );
+	</script>
+    <script>
+		$(document).ready(function() {
+			var table = $('#table_users_t').DataTable( {
+				lengthChange: false,
+				buttons: [ 'copy', 'excel', 'pdf', 'print']
+			} );
+		 
+			table.buttons().container()
+				.appendTo( '#table_users_t_wrapper .col-md-6:eq(0)' );
+		} );
+	</script>
+@endsection 

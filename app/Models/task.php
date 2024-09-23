@@ -21,4 +21,10 @@ class Task extends Model
     {
         return $this->belongsTo(Course::class, 'course', 'id_course', 'name_course');
     }
+
+    public function task()
+    {
+        return $this->belongsTo(Task::class, 'task_id');
+
+    }
 }

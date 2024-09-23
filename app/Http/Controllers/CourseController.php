@@ -38,14 +38,14 @@ class CourseController extends Controller
             ->whereNull('courses.deleted_at')
             ->groupBy('courses.id_course', 'courses.name_course', 'courses.created_at', 'progress_tasks.total_progress_tasks', 'final_tasks.total_final_tasks')
             ->oldest()
-            ->paginate(10);
+            ->get();
 
         $deletecouses = DB::table('courses')
             ->leftJoin('students', 'courses.id_course', '=', 'students.course')
             ->select('courses.id_course', 'courses.name_course', 'courses.created_at',  DB::raw('count(students.id_student) as total'))
             ->whereNotNull('courses.deleted_at')
             ->groupBy('courses.id_course', 'courses.name_course', 'courses.created_at')
-            ->oldest()->paginate(10);
+            ->oldest()->get();
 
         return view('Cursos', ['couses' => $courses , 'deletecouses' => $deletecouses]);
     }

@@ -1,188 +1,307 @@
-@extends('Layout.base')
+@extends('Layout.master')
+
+@section('css')
+  <link rel="stylesheet" href="{{ URL::asset('build/css/extra-icons.css') }}">
+@endsection 
+
+@section('title', 'Matoxi')
 
 @section('content')
-<div class="row">
-    <div>
-        <header style="background-color: #f1c40e; width: 100%; position: fixed; top: 0; left: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; height: 100px; z-index: 1000" id="cabecera">
-            <div class="iden_per">
-                <div>
-                    <div class="item">
-                        <p style="color: black;  font-size: 25px; margin-top: 2%"><strong>{{Auth::user()->name}}</strong></p>
+        <div class="row">
+          <div class="col-12 col-xl-4 d-flex">
+             <div class="card rounded-4 w-100">
+               <div class="card-body">
+                 <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="">
+                      <h2 class="mb-0">$9,568</h2>
                     </div>
+                    <div class="">
+                      <p class="dash-lable d-flex align-items-center gap-1 rounded mb-0 bg-danger text-danger bg-opacity-10"><span class="material-icons-outlined fs-6">arrow_downward</span>8.6%</p>
+                    </div>
+                  </div>
+                  <p class="mb-0">Average Weekly Sales</p>
+                   <div id="chart1"></div>
+               </div>
+             </div>
+          </div>
+          <div class="col-12 col-xl-8 d-flex">
+            <div class="card rounded-4 w-100">
+              <div class="card-body">
+                <div class="d-flex align-items-center justify-content-around flex-wrap gap-4 p-4">
+                  <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                    <a href="javascript:;" class="mb-2 wh-48 bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="lni lni-graduation fs-4"></i>
+                    </a>
+                    <h3 class="mb-0">{{$alumnos}}</h3>
+                    <p class="mb-0">Alumnos</p>
+                  </div>
+                  <div class="vr"></div>
+                  <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                    <a href="javascript:;" class="mb-2 wh-48 bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="fadeIn animated bx bx-glasses fs-4"></i>
+                    </a>
+                    <h3 class="mb-0">{{$docentes}}</h3>
+                    <p class="mb-0">Docentes</p>
+                  </div>
+                  <div class="vr"></div>
+                  <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                    <a href="javascript:;" class="mb-2 wh-48 bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="fadeIn animated bx bx-server fs-4"></i>
+                    </a>
+                    <h3 class="mb-0">{{$clases}}</h3>
+                    <p class="mb-0">Clases</p>
+                  </div>
+                  <div class="vr"></div>
+                  
+                  <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                    <a href="javascript:;" class="mb-2 wh-48 bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="fadeIn animated bx bx-group fs-4"></i>
+                    </a>
+                    <h3 class="mb-0">{{$cursos}}</h3>
+                    <p class="mb-0">Cursos</p>
+                  </div>
+                  <div class="vr"></div>
+                  <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                    <a href="javascript:;" class="mb-2 wh-48 bg-warning bg-opacity-10 text-warning  rounded-circle d-flex align-items-center justify-content-center">
+                      <i class="lni lni-stackoverflow fs-4"></i>
+                    </a>
+                    <h3 class="mb-0">{{$tareas}}</h3>
+                    <p class="mb-0">Tareas</p>
+                  </div>
                 </div>
+              </div>
             </div>
-            <ul style="display: flex; align-items: center; margin-top: 1%">
-                <div>
-                    <a href="{{route('users.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Usuarios</a>
-                </div>
-                <div>
-                    <a href="{{route('classes.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8 ; margin-right: 20px">Clases</a>
-                </div>
-                <div>
-                    <a href="{{route('courses.index')}}" class="btn btn-primary" style="background-color: #1414b8 ; border-color: #1414b8">Cursos</a>
-                </div>
-                <form action="{{route("logout")}}" method="POST" class="d-inline" style="margin-left: 20px">
-                    @csrf
-                    <button type="submit" class="btn btn-danger">Cerrar Sesion</button>
-                </form>
-            </ul>
-        </header>
-    </div><br><br><br><br><br><br>
-    <div class="col-12">
-        <div>
-            <h2 class="text-white">Tareas Existentes</h2>
-        </div>
-    </div>
+          </div>
+        </div><!--end row-->
+        
+        <div class="row w-100">
+          <div class="col-12 col-xl-7 col-xxl-8 d-flex w-100">
+            <div class="card w-100 rounded-4">
+               <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                  <div class="">
+                    <h5 class="mb-0 fw-bold">Tareas creadas por mes y clase</h5>
+                  </div>
+                 </div>
+                  <div id="chart4"></div>
+                  <div class="d-flex flex-column flex-lg-row align-items-start justify-content-around border p-3 rounded-4 mt-3 gap-3">
+                    <div class="d-flex align-items-center gap-4">
+                      <div class="">
+                        <p class="mb-0 data-attributes">
+                          <span
+                            data-peity='{ "fill": ["#0d6efd", "rgb(0 0 0 / 10%)"], "innerRadius": 32, "radius": 40 }'>{{$tareasP}}/{{$tareas}}</span>
+                        </p>
+                      </div>
+                      <diiv class="">
+                        <p class="mb-1 fs-6 fw-bold">Tareas en Progreso</p>
+                        <h2 class="mb-0">{{$tareasP}}</h2>
+                        <p class="mb-0"><span class="text-success me-2 fw-medium">{{$porcientoP}}%</span></p>
+                      </diiv>
+                    </div>
+                    <div class="vr"></div>
+                    <div class="d-flex align-items-center gap-4">
+                      <div class="">
+                        <p class="mb-0 data-attributes">
+                          <span
+                            data-peity='{ "fill": ["#6f42c1", "rgb(0 0 0 / 10%)"], "innerRadius": 32, "radius": 40 }'>{{$tareasF}}/{{$tareas}}</span>
+                        </p>
+                      </div>
+                      <div class="">
+                        <p class="mb-1 fs-6 fw-bold">Tareas Finalizadas</p>
+                        <h2 class="mb-0">{{$tareasF}}</h2>
+                        <p class="mb-0"><span class="text-success me-2 fw-medium">{{$porcientoF}}%</span></p>
+                      </div>
+                    </div>
+                  </div>
+               </div>
+            </div>  
+          </div> 
+        </div><!--end row-->
 
-    @if (Session::get('success'))
-        <div class="alert alert-success mt-2">
-            <strong>{{Session::get('success')}}</strong><br>
-        </div>
-    @endif
+        <div class="row">
+           <div class="col-12 col-xl-4 d-flex">
+            <div class="card w-100 rounded-4">
+               <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                  <div class="">
+                    <h5 class="mb-0 fw-bold">Porcentaje de alumnos al dia</h5>
+                  </div>
+                 </div>
+                  <div class="d-flex flex-column gap-4">
+                    @foreach($porcentajeCalificadas as $porcentajeCalificada)
+                      <div class="d-flex align-items-center gap-4">
+                        <div class="d-flex align-items-center gap-3 flex-grow-1 flex-shrink-0">
+                          <div class="wh-48 d-flex align-items-center justify-content-center rounded-circle" style="background-color: {{$porcentajeCalificada['color']}}">
+                            <span class="fadeIn animated bx {{$porcentajeCalificada['icon']}} fs-3"></span>
+                          </div>
+                          <div class="">
+                            <h6 class="mb-0 fw-bold">{{$porcentajeCalificada['name']}}</h6>
+                            <p class="mb-0">{{$porcentajeCalificada['canti']}} para {{$porcentajeCalificada['dia']}}</p>
+                          </div>
+                        </div>
+                        <div class="progress w-25" style="height: 5px;">
+                          <div class="progress-bar" style="width: {{$porcentajeCalificada['porcentajealdia']}}% ; background-color: {{$porcentajeCalificada['color']}}"></div>
+                        </div>
+                        <div class="">
+                        <p class="mb-0 fs-6">{{$porcentajeCalificada['porcentajealdia']}}%</p>
+                        </div>
+                      </div>
+                    @endforeach
+                  </div>
+               </div>
+             </div>
+           </div>
 
-    <div class="col-12 mt-4">
-        <form method="GET" action="{{ route('tasks.index') }}" class="form-inline">
-            <div class="form-group mx-sm-3 mb-4">
-                <label for="filter" class="sr-only mb-2">Filtrar por</label>
-                <select class="form-control" id="filter" name="filter">
-                    <option value="blanco" {{ request('filter') == 'blanco' ? 'selected' : '' }}>Seleccione una Opción</option>
-                    <option value="name" {{ request('filter') == 'name' ? 'selected' : '' }}>Nombre</option>
-                    <option value="date" {{ request('filter') == 'date' ? 'selected' : '' }}>Fecha</option>
-                    <option value="estado" {{ request('filter') == 'estado' ? 'selected' : '' }}>Estado</option>
-                    <option value="Curso" {{ request('filter') == 'Curso' ? 'selected' : '' }}>Curso</option>
-                    <option value="class" {{ request('filter') == 'class' ? 'selected' : '' }}>Clase</option>
-                </select>
+           <div class="col-12 col-xl-4 d-flex">
+            <div class="card w-100 rounded-4">
+              <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                  <div class="">
+                    <h5 class="mb-0 fw-bold">Porcentajes por Tarea</h5>
+                  </div>
+                 </div>
+                <div class="d-flex flex-column justify-content-between gap-4">
+                  @foreach($porcientoT as $porcienT)
+                    <div class="d-flex align-items-center gap-4">
+                      <div class="d-flex align-items-center gap-3 flex-grow-1">
+                        <div class="wh-48 d-flex align-items-center justify-content-center rounded-circle" style="background-color: {{$porcienT['color']}}">
+                          <span class="fadeIn animated bx {{$porcienT['icon']}} fs-3"></span>
+                        </div>
+                        <p class="mb-0">{{$porcienT['name']}}</p>
+                      </div>
+                      <div class="">
+                        <p class="mb-0 fs-6">{{$porcienT['data']}}%</p>
+                      </div>
+                      <div class="">
+                        <p class="mb-0 data-attributes">
+                          <span
+                            data-peity='{ "fill": ["{{$porcienT['color']}}", "rgb(0 0 0 / 10%)"], "innerRadius": 14, "radius": 18 }'>{{$porcienT['cantidad']}}/{{$tareas}}</span>
+                        </p>
+                      </div>
+                    </div>
+                  @endforeach
+                </div>
+              </div>
+            </div>  
+          </div>
+
+           <div class="col-12 col-xl-4 d-flex">
+            <div class="card rounded-4 w-100">
+              <div class="card-body">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                  <div class="">
+                    <h5 class="mb-0 fw-bold">Recent Transactions</h5>
+                  </div>
+                  <div class="dropdown">
+                    <a href="javascript:;" class="dropdown-toggle-nocaret options dropdown-toggle"
+                      data-bs-toggle="dropdown">
+                      <span class="material-icons-outlined fs-5">more_vert</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="javascript:;">Action</a></li>
+                      <li><a class="dropdown-item" href="javascript:;">Another action</a></li>
+                      <li><a class="dropdown-item" href="javascript:;">Something else here</a></li>
+                    </ul>
+                  </div>
+                 </div>
+                <div class="payments-list">
+                  <div class="d-flex flex-column gap-4">
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="wh-48 d-flex align-items-center justify-content-center bg-danger rounded-circle">
+                        <span class="material-icons-outlined text-white">shopping_cart</span>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0 fw-bold">Online Purchase</h6>
+                        <p class="mb-0">03/10/2022</p>
+                      </div>
+                      <div class="d-flex align-items-center">
+                        <h6 class="mb-0 fw-bold">$97,896</h6>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="wh-48 d-flex align-items-center justify-content-center rounded-circle bg-primary">
+                        <span class="material-icons-outlined text-white">monetization_on</span>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0">Bank Transfer</h6>
+                        <p class="mb-0">03/10/2022</p>
+                      </div>
+                      <div class="d-flex align-items-center gap-1">
+                        <h6 class="mb-0 fw-bold">$86,469</h6>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="wh-48 d-flex align-items-center justify-content-center rounded-circle bg-success">
+                        <span class="material-icons-outlined text-white">credit_card</span>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0">Credit Card</h6>
+                        <p class="mb-0">03/10/2022</p>
+                      </div>
+                      <div class="d-flex align-items-center gap-1">
+                        <h6 class="mb-0 fw-bold">$45,259</h6>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="wh-48 d-flex align-items-center justify-content-center rounded-circle bg-purple">
+                        <span class="material-icons-outlined text-white">account_balance</span>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0">Laptop Payment</h6>
+                        <p class="mb-0">03/10/2022</p>
+                      </div>
+                      <div class="d-flex align-items-center gap-1">
+                        <h6 class="mb-0 fw-bold">$35,249</h6>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="wh-48 d-flex align-items-center justify-content-center rounded-circle bg-orange">
+                        <span class="material-icons-outlined text-white">savings</span>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0">Template Payment</h6>
+                        <p class="mb-0">03/10/2022</p>
+                      </div>
+                      <div class="d-flex align-items-center gap-1">
+                        <h6 class="mb-0 fw-bold">$68,478</h6>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="wh-48 d-flex align-items-center justify-content-center rounded-circle bg-info">
+                        <span class="material-icons-outlined text-white">paid</span>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0">iPhone Purchase</h6>
+                        <p class="mb-0">03/10/2022</p>
+                      </div>
+                      <div class="d-flex align-items-center gap-1">
+                        <h6 class="mb-0 fw-bold">$55,128</h6>
+                      </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="wh-48 d-flex align-items-center justify-content-center rounded-circle bg-pink">
+                        <span class="material-icons-outlined text-white">card_giftcard</span>
+                      </div>
+                      <div class="flex-grow-1">
+                        <h6 class="mb-0">Account Credit</h6>
+                        <p class="mb-0">03/10/2022</p>
+                      </div>
+                      <div class="d-flex align-items-center gap-1">
+                        <h6 class="mb-0 fw-bold">$24,568</h6>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="form-group mx-sm-3 mb-4">
-                <label for="search" class="sr-only mb-2">Buscar</label>
-                <input type="text" class="form-control" id="search" name="search" placeholder="Buscar" value="{{ request('search') }}">
-            </div>
-            <button type="submit" class="btn btn-primary mb-4" style="margin-left: 50% ; background-color: #1414b8; border-color: #1414b8; color: #fff">Buscar</button>
-        </form>
-    </div>
-    <div class="col-12 mt-4">
-        <table class="table table-bordered text-white">
-            <tr class="text-secondary">
-                <th style="color: #fff">Tarea</th>
-                <th style="color: #fff">Descripción</th>
-                <th style="color: #fff">Fecha</th>
-                <th style="color: #fff">Materia</th>
-                <th style="color: #fff">Curso</th>
-                <th style="color: #fff">Estado</th>
-                <th style="color: #fff">Acción</th>
-            </tr>
-            @foreach ($tasks as $task)
-                <tr>
-                    <td class="fw-bold">{{$task->Titulo}}</td>
-                    <td>{{$task->descripción}}</td>
-                    <td>
-                        {{$task->tarea_date}}
-                    </td>
-                    <td>{{$task->class}}</td>
-                    <td>{{$task->course}}</td>
-                    @if ($task->estado == 'Pendiente')
-                        <td style="text-align: center ; padding-top: 20px">
-                            <span class="badge fs-6" style="background-color: #E67E22">{{$task->estado}}</span>
-                        </td>
-                    @endif
-                    @if ($task->estado == 'Finalizada')
-                        <td style="text-align: center ; padding-top: 20px">
-                            <span class="badge fs-6" style="background-color: #2ECC71">{{$task->estado}}</span>
-                        </td>
-                    @endif
-                    @if ($task->estado == 'En progreso')
-                        <td style="text-align: center ; padding-top: 20px">
-                            <span class="badge fs-6" style="background-color: #F1C40F">{{$task->estado}}</span>
-                        </td>
-                    @endif
+         </div>
+@endsection 
+@section('scripts')
 
-                    <td style="display: flex ;  justify-content: center ; align-items: center">
-                        <form action="{{route("tasks.destroy", $task)}}" method="POST" class="d-inline m-2">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger delete-task-button">Eliminar</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-            
-        </table>
-        {{$tasks->appends(request()->query())->links()}}
-    </div>
-    <div>
-        <h1 class="mb-4 mt-4" style="text-align: center">Estadisticas</h1>
-    </div>
-    <div class="col-12 mt-4" style="width: 500px">
-        <canvas id="tasksChart" width="500" height="400">
-    </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        fetch('/tasks/chart-data')
-            .then(response => response.json())
-            .then(data => {
-                const labels = data.map(task => task.class_name);
-                const totals = data.map(task => task.total);
-
-                const ctx = document.getElementById('tasksChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Número de tareas en la clase',
-                            data: totals,
-                            backgroundColor: ['#1414b8', '#F1C40F', '#2ECC71', '#E67E22'],
-                            borderColor: ['#1414b8', '#F1C40F', '#2ECC71', '#E67E22'],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            x: {
-                                ticks: {
-                                    color: '#ffffff', // Color de la letra en el eje x
-                                    font: {
-                                        size: 14 // Tamaño de la letra en el eje x
-                                    }
-                                }
-                            },
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    color: '#ffffff', // Color de la letra en el eje y
-                                    font: {
-                                        size: 14 // Tamaño de la letra en el eje y
-                                    }
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: {
-                                labels: {
-                                    color: '#ffffff', // Color de la letra en la leyenda
-                                    font: {
-                                        size: 16 // Tamaño de la letra en la leyenda
-                                    }
-                                }
-                            }
-                        },
-                        responsive: true,
-                        maintainAspectRatio: false // Permitir ajustar el tamaño manualmente
-                    }
-                });
-            });
-    });
-</script>
-<script>
-    document.querySelectorAll('.delete-task-button').forEach(button => {
-        button.addEventListener('click', function(event){
-            event.preventDefault();
-            if(confirm('¿Estas seguro de Eliminar esta tarea?')){
-                this.closest('form').submit();
-            }
-        });
-    });
-</script>
-@endsection
+  <script src="{{ URL::asset('build/plugins/apexchart/apexcharts.min.js') }}"></script>
+  <script src="{{ URL::asset('build/js/index.js') }}"></script>
+  <script src="{{ URL::asset('build/plugins/peity/jquery.peity.min.js') }}"></script>
+  <script>
+    $(".data-attributes span").peity("donut")
+  </script>
+@endsection 

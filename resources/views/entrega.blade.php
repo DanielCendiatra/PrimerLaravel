@@ -1,108 +1,118 @@
-@extends('Layout.base')
+@extends('Layout.master')
 
+@section('css')
+	<link href="{{ URL::asset('build/plugins/datatable/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ URL::asset('build/css/extra-icons.css') }}">
+@endsection
 @section('content')
 <div class="row">
-    <div>
-        <header style="background-color: #f1c40e; width: 100%; position: fixed; top: 0; left: 0; display: flex; justify-content: space-between; align-items: center; padding: 0 5%; height: 100px; z-index: 1000" id="cabecera">
-            <div class="iden_per">
-                <div>
-                    <div class="item">
-                        <p style="color: black; font-size: 25px; margin-top: 2%"><strong>{{ Auth::user()->name }}</strong></p>
-                    </div>
+    <h3 class="mb-3 mt-4 text-uppercase">Tareas del Alumno</h3>
+    <hr>
+    @if (Session::get('success'))
+        <div class="alert alert-border-success alert-dismissible fade show mx-3" style="width: 97%">
+            <div class="d-flex align-items-center">
+                <div class="font-35 text-success"><span class="material-icons-outlined fs-2">check_circle</span>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-0 text-success">Felicidades</h6>
+                    <div class=""><strong>{{Session::get('success')}}</strong><br></div>
                 </div>
             </div>
-            <ul style="display: flex; align-items: center; margin-top: 1%">
-                <form action="{{ route("logout") }}" method="POST" class="d-inline" style="margin-left: 20px">
-                    @csrf
-                    <button type="submit" class="btn btn-danger">Cerrar Sesion</button>
-                </form>
-            </ul>
-        </header>
-    </div><br><br><br><br><br><br>
-    <div class="col-12">
-        <div>
-            <h2 class="text-white">Tareas del Estudiante</h2>
-        </div>
-    </div>
-
-    @if (Session::get('success'))
-        <div class="alert alert-success mt-2">
-            <strong>{{ Session::get('success') }}</strong><br>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-
-    <!-- Barra de búsqueda y filtros -->
-    <div class="col-12 mt-4">
-        <form method="GET" action="{{ route('tasks.index') }}" class="form-inline">
-            <div class="form-group mx-sm-3 mb-4">
-                <label for="filter" class="sr-only mb-2">Filtrar por</label>
-                <select class="form-control" id="filter" name="filter">
-                    <option value="blanco" {{ request('filter') == 'blanco' ? 'selected' : '' }}>Seleccione una Opción</option>
-                    <option value="name" {{ request('filter') == 'name' ? 'selected' : '' }}>Nombre</option>
-                    <option value="date" {{ request('filter') == 'date' ? 'selected' : '' }}>Fecha</option>
-                    <option value="estado" {{ request('filter') == 'estado' ? 'selected' : '' }}>Estado</option>
-                    <option value="note" {{ request('filter') == 'note' ? 'selected' : '' }}>Nota</option>
-                    <option value="class" {{ request('filter') == 'class' ? 'selected' : '' }}>Clase</option>
-                </select>
+    @if (Session::get('error'))
+        <div class="alert alert-border-danger alert-dismissible fade show">
+            <div class="d-flex align-items-center">
+                <div class="font-35 text-danger"><span class="material-icons-outlined fs-2">report_gmailerrorred</span>
+                </div>
+                <div class="ms-3">
+                    <h6 class="mb-0 text-danger">Error</h6>
+                    <div class=""><strong>{{Session::get('error')}}</strong></div>
+                </div>
             </div>
-            <div class="form-group mx-sm-3 mb-4">
-                <label for="search" class="sr-only mb-2">Buscar</label>
-                <input type="text" class="form-control" id="search" name="search" placeholder="Buscar" value="{{ request('search') }}">
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered" style="width:100%" id="table_tareas_A">
+                    <thead>
+                        <tr>
+                            <th>Tarea</th>
+                            <th>Descripción</th>
+                            <th>Fecha</th>
+                            <th>Mareria</th>
+                            <th>Nota</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($tasks as $task)
+                            <tr>
+                                <td>{{ $task->Titulo }}</td>
+                                <td>{{ $task->descripción }}</td>
+                                <td>{{ $task->tarea_date }}</td>
+                                <td>{{ $task->name_class }}</td>
+                                <td>{{ $task->student_task_nota}}</td>
+                                @if ($task->student_task_estado == 'Entrega Tardia')
+                                <td style="padding-top: 25px ; text-align:center">
+                                    <span class="lable-table bg-warning-subtle text-warning rounded border border-warning-subtle font-text2 fw-bold">{{$task->student_task_estado}}<i class="bi bi-info-circle ms-2"></i></span>
+                                </td>
+                            @endif
+                            @if ($task->student_task_estado == 'Calificada')
+                                <td style="padding-top: 25px ; text-align:center">
+                                    <span class="lable-table bg-primary-subtle text-primary rounded border border-primary-subtle font-text2 fw-bold">{{$task->student_task_estado}}<i class="bi bi-check2-all ms-2"></i></span>
+                                </td>
+                            @endif
+                            @if ($task->student_task_estado == 'Entregada')
+                                <td style="padding-top: 25px ; text-align:center">
+                                    <span class="lable-table bg-success-subtle text-success rounded border border-success-subtle font-text2 fw-bold">{{$task->student_task_estado}}<i class="bi bi-check2 ms-2"></i></span>
+                                </td>
+                            @endif
+                            @if ($task->student_task_estado == 'Vacia')
+                                <td style="padding-top: 25px ; text-align:center">
+                                    <span class="lable-table bg-danger-subtle text-danger rounded border border-danger-subtle font-text2 fw-bold">{{$task->student_task_estado}}<i class="bi bi-x-lg ms-2"></i></span>
+                                </td>
+                            @endif
+                            <td>
+                                <form action="{{ route('tasks.entregar', $task->id) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <div class="col">
+                                        <button type="submit" class="btn btn-outline-primary px-4 d-flex gap-2"><i class="lni lni-telegram-original mt-1"></i>Entregar</button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th>Tarea</th>
+                            <th>Descripción</th>
+                            <th>Fecha</th>
+                            <th>Mareria</th>
+                            <th>Nota</th>
+                            <th>Estado</th>
+                            <th>Acción</th>
+                        </tr>
+                    </tfoot>
+                </table>
             </div>
-            <button type="submit" class="btn btn-primary mb-4" style="margin-left: 50% ; background-color: #1414b8; border-color: #1414b8; color: #fff">Buscar</button>
-        </form>
-    </div>
-
-    <div class="col-12 mt-4">
-        <table class="table table-bordered text-white">
-            <tr class="text-secondary">
-                <th style="color: #fff">Tarea</th>
-                <th style="color: #fff">Descripción</th>
-                <th style="color: #fff">Fecha</th>
-                <th style="color: #fff">Nota</th>
-                <th style="color: #fff">Estado</th>
-                <th style="color: #fff">Acción</th>
-            </tr>
-            @foreach ($tasks as $task)
-                <tr>
-                    <td class="fw-bold">{{ $task->Titulo }}</td>
-                    <td>{{ $task->descripción }}</td>
-                    <td>{{ $task->tarea_date }}</td>
-                    <td>{{ $task->student_task_nota}}</td>
-
-                    @if ($task->student_task_estado == 'Vacia')
-                        <td>
-                            <span class="badge fs-6" style="background-color:darkgray">{{ $task->student_task_estado }}</span>
-                        </td>
-                    @endif
-                    @if ($task->student_task_estado == 'Entregada')
-                        <td>
-                            <span class="badge fs-6" style="background-color: #2ECC71">{{ $task->student_task_estado }}</span>
-                        </td>
-                    @endif
-                    @if ($task->student_task_estado == 'Calificada')
-                        <td>
-                            <span class="badge fs-6" style="background-color: #F1C40F">{{ $task->student_task_estado }}</span>
-                        </td>
-                    @endif
-                    @if ($task->student_task_estado == 'Entrega Tardia')
-                        <td>
-                            <span class="badge fs-6" style="background-color: #E67E22">{{ $task->student_task_estado }}</span>
-                        </td>
-                    @endif
-
-                    <td>
-                        <form action="{{ route('tasks.entregar', $task->id) }}" method="POST">
-                            @csrf
-                            @method('PATCH')
-                            <button type="submit" class="btn btn-warning" style="background-color: #1414b8; border-color: #1414b8; color: #fff">Entregar</button>
-                        </form>
-                    </td>
-                </tr>
-            @endforeach
-            
-        </table>
-        {{$tasks->appends(request()->query())->links()}}
+        </div>
     </div>
 </div>
 @endsection
+@section('scripts')  
+    <script src="{{ URL::asset('build/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
+	<script src="{{ URL::asset('build/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+	<script>
+		$(document).ready(function() {
+			$('#table_tareas_A').DataTable();
+		  } );
+	</script>
+@endsection 

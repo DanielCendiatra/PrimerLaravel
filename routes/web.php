@@ -30,6 +30,7 @@ Route::post('/iniciar-sesion', [LoginController::class, 'login'])->name('iniciar
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/tasks/chart-data', [TaskController::class, 'getTasksByClass']);
+Route::get('/tasks/chart-porcentaje', [TaskController::class, 'calcular_porcentaje'])->name('chart_porcentaje');
 Route::resource('/users', UserController::class)->middleware('auth');
 Route::resource('/Calificar', Student_taskController::class)->middleware('auth');
 Route::resource('/classes', ClasseController::class)->middleware('auth');
@@ -41,4 +42,6 @@ Route::resource('/courses', CourseController::class)->middleware('auth');
 Route::resource('/tasks', TaskController::class)->middleware('auth');
 Route::resource('/entrega', TaskController::class)->middleware('auth');
 Route::patch('/tasks/{task}/entregar', [TaskController::class, 'entregar'])->name('tasks.entregar');
+Route::get('/tasksview', [TaskController::class, 'seeTasksAdmin'])->name('tasksview');
+Route::get('/tasksclassview', [TaskController::class, 'seeactivities'])->name('tasksclassview');
 Route::get('/report/student/{id_student}', [Student_taskController::class, 'generateReport'])->name('student.report');
